@@ -1,0 +1,23 @@
+  .asm-ns { stroke:none; stroke-width:2px; fill:#dddddd;  }
+  .asm-genome { stroke:none; stroke-width:2px; fill:rgb(178,223,138); }
+  .asm-atgc { fill:rgb(166,206,227); }
+  .asm-gc { fill:rgb(31,120,180); }
+  .asm-count { stroke:none; fill:rgb(202,178,214); }
+  .asm-count_axis { stroke:white; stroke-width:2px; fill:none; }
+  .asm-length_axis { stroke:#666666; stroke-width:0.67px; fill:none; opacity:0.6; }
+  .asm-n50_pie { stroke:none; stroke-width:2px; fill:rgb(255,127,0); opacity:0.6; }
+  .asm-n90_pie { stroke:none; stroke-width:2px; fill:rgb(253,191,111); opacity:0.6; }
+  .asm-longest_pie { stroke:none; fill:rgb(227,26,28)/*rgb(51,160,44)*/; opacity:0.6 }
+  .asm-pie { stroke:none; fill:#bbbbbb; }
+  .asm-majorTick { stroke:#666666; stroke-width:2px; fill:none; }
+  .asm-minorTick { stroke:#666666; fill:none; }
+  .asm-axis { stroke:#666666; stroke-width:2px; fill:none; }  
+  text { dominant-baseline:middle; text-anchor:middle; font-size:8pt; font-family:sans-serif; fill:#666666; }
+  text.asm-count_label { dominant-baseline:middle; text-anchor:end; fill:white; visibility:hidden; }
+  text.asm-length_label { dominant-baseline:middle; text-anchor:start; stroke:none; :#666666; }
+  text.asm-assembly_label { dominant-baseline:middle; text-anchor:start; fill:white; visibility:hidden; }
+  text.asm-tl_title { dominant-baseline:middle; text-anchor:start; fill:black; font-size:12pt; }
+  text.asm-br_title { dominant-baseline:middle; text-anchor:end; fill:black; font-size:12pt; }
+  text.asm-bl_title { dominant-baseline:middle; text-anchor:start; fill:black; font-size:12pt; }
+  text.asm-tr_title { dominant-baseline:middle; text-anchor:start; fill:black; font-size:12pt; }
+  .asm-key { dominant-baseline:auto; text-anchor:start; fill:#666666; font-size:10pt; }
