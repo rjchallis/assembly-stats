@@ -221,7 +221,7 @@ Assembly.prototype.drawPlot = function(parent,size,margin,tick){
   	//txt.append('tspan').text('size').attr('x',0).attr('dy',18);
       var key = g.append('g').attr('transform', 'translate('+(-size/2+10)+','+(size/2-43)+')');
   	key.append('rect').attr('height',w).attr('width',w).attr('class','asm-genome');
-  	key.append('text').attr('x',w+2).attr('y',w-1).text(getReadableSeqSizeString(this.assembly)).attr('class','asm-key');
+  	key.append('text').attr('x',w+2).attr('y',w-1).text(getReadableSeqSizeString(this.assembly)+' = '+(this.assembly/this.scaffolds[0]).toFixed(0)+' x longest scaffold').attr('class','asm-key');
   	 
 
   //square_mod
@@ -284,7 +284,7 @@ Assembly.prototype.drawPlot = function(parent,size,margin,tick){
   	var count_txt = key.append('text').attr('x',w+2).attr('y',w-1).attr('class','asm-key')
   		count_txt.append('tspan').text('Log')
   		count_txt.append('tspan').attr('baseline-shift','sub').attr('font-size','75%').text(10)
-  		count_txt.append('tspan').text(' scaffold count (total '+this.scaffolds.length+')');
+  		count_txt.append('tspan').text(' scaffold count (total '+this.scaffolds.length.toLocaleString()+')');
   	
   	
 }
