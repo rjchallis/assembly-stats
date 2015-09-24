@@ -82,6 +82,9 @@ Assembly.prototype.drawPlot = function(parent,size,margin,tick){
   this.scale['proportion'].range([radii.core[0],radii.core[1]*2])
   this.scale['percent'].range([radii.core[0],radii.core[1]*2])
   
+  //round_mod
+  this.scale['percent'].range([0,(2 * Math.PI)])
+  
   //this.scale['count'].range([radii.core[0],radii.core[1]])
   var lScale = this.scale['length'];
   var cScale = this.scale['count'];
@@ -200,9 +203,10 @@ Assembly.prototype.drawPlot = function(parent,size,margin,tick){
         .attr('class','asm-length_label');*/
   	
   //square_mod
+  //round_mod
   //plot_arc(g,radii.proportion[0],radii.proportion[1],this.scale['proportion'](1),this.scale['proportion'](this.assembly/this.scaffolds[0]),'asm-genome');
-  plot_rect(g,-radii.proportion[0],radii.core[1],Math.abs(radii.proportion[1]-radii.proportion[0]),this.scale['proportion'](this.assembly/this.scaffolds[0]),'asm-genome');
-  proportion_axis(g,radii,this.scale['proportion']);
+  //plot_rect(g,-radii.proportion[0],radii.core[1],Math.abs(radii.proportion[1]-radii.proportion[0]),this.scale['proportion'](this.assembly/this.scaffolds[0]),'asm-genome');
+  //proportion_axis(g,radii,this.scale['proportion']);
    var w = 12;
   	/*
   proportion_axis(g,radii,this.scale['proportion']);
@@ -212,7 +216,7 @@ Assembly.prototype.drawPlot = function(parent,size,margin,tick){
         .text(this.assembly)
         .attr('transform', 'translate('+x+','+-y+') rotate('+(276)+')')
         .attr('class','asm-assembly_label');
-  	*/
+  	
   	var txt = g.append('text')
         .attr('transform', 'translate('+(-size/2+10)+','+(size/2-70)+')')
         .attr('class','asm-tl_title');
@@ -222,18 +226,25 @@ Assembly.prototype.drawPlot = function(parent,size,margin,tick){
       var key = g.append('g').attr('transform', 'translate('+(-size/2+10)+','+(size/2-43)+')');
   	key.append('rect').attr('height',w).attr('width',w).attr('class','asm-genome');
   	key.append('text').attr('x',w+2).attr('y',w-1).text(getReadableSeqSizeString(this.assembly)+' = '+(this.assembly/this.scaffolds[0]).toFixed(0)+' x longest scaffold').attr('class','asm-key');
-  	 
+  	 */
 
   //square_mod
+  //round_mod
   //plot_arc(g,radii.percent[0],radii.percent[1],this.scale['percent'](0),this.scale['percent'](100),'asm-ns');
   //plot_arc(g,radii.percent[0],radii.percent[1],this.scale['percent']((1-this.ATGC)/2*100),this.scale['percent'](100*this.ATGC + (1-this.ATGC)/2*100),'asm-atgc');
   //plot_arc(g,radii.percent[0],radii.percent[1],this.scale['percent']((1-this.ATGC)/2*100),this.scale['percent'](this.GC),'asm-gc');
-  plot_rect(g,radii.percent[1],radii.core[1],Math.abs(radii.proportion[1]-radii.proportion[0]),this.scale['percent'](100),'asm-ns');
-  plot_rect(g,radii.percent[1],radii.core[1],Math.abs(radii.proportion[1]-radii.proportion[0]),this.scale['percent'](100*this.ATGC),'asm-atgc');
-  plot_rect(g,radii.percent[1],radii.core[1],Math.abs(radii.proportion[1]-radii.proportion[0]),this.scale['percent'](this.GC),'asm-gc');
+  //plot_rect(g,radii.percent[1],radii.core[1],Math.abs(radii.proportion[1]-radii.proportion[0]),this.scale['percent'](100),'asm-ns');
+  //plot_rect(g,radii.percent[1],radii.core[1],Math.abs(radii.proportion[1]-radii.proportion[0]),this.scale['percent'](100*this.ATGC),'asm-atgc');
+  //plot_rect(g,radii.percent[1],radii.core[1],Math.abs(radii.proportion[1]-radii.proportion[0]),this.scale['percent'](this.GC),'asm-gc');
+  plot_arc(g,radii.percent[0],radii.percent[1],this.scale['percent'](0),this.scale['percent'](100),'asm-ns');
+  var atgc = this.ATGC * 100;
+  var n = 100 - atgc;
+  var gc_start = n / 100 * this.GC;
+  plot_arc(g,radii.percent[0],radii.percent[1],this.scale['percent'](gc_start),this.scale['percent'](gc_start+atgc),'asm-atgc');
+  plot_arc(g,radii.percent[0],radii.percent[1],this.scale['percent'](gc_start),this.scale['percent'](this.GC),'asm-gc');
   
   
-  percent_axis(g,radii,this.scale['percent']);
+  //percent_axis(g,radii,this.scale['percent']);
   var txt = g.append('text')
         .attr('transform', 'translate('+(size/2-10)+','+(size/2-70)+')')
         .attr('class','asm-br_title');
