@@ -250,32 +250,32 @@ Assembly.prototype.drawPlot = function(parent,size,margin,tick){
   //plot_rect(g,radii.percent[1],radii.core[1],Math.abs(radii.proportion[1]-radii.proportion[0]),this.scale['percent'](100*this.ATGC),'asm-atgc');
   //plot_rect(g,radii.percent[1],radii.core[1],Math.abs(radii.proportion[1]-radii.proportion[0]),this.scale['percent'](this.GC),'asm-gc');
   var txt = g.append('text')
-        .attr('transform', 'translate('+(size/2-10)+','+(size/2-70)+')')
+        .attr('transform', 'translate('+(size/2-140)+','+(size/2-110)+')')
         .attr('class','asm-br_title');
   	txt.append('tspan').text('Assembly');
   	txt.append('tspan').text('base composition').attr('x',0).attr('dy',18);
   	//txt.append('tspan').text('composition').attr('x',0).attr('dy',18);
   	
-  	var key = g.append('g').attr('transform', 'translate('+(size/2-120)+','+(size/2-43)+')');
+  	var key = g.append('g').attr('transform', 'translate('+(size/2-140)+','+(size/2-83)+')');
   	key.append('rect').attr('height',w).attr('width',w).attr('class','asm-gc');
-  	key.append('text').attr('x',w+2).attr('y',w-1).text('GC').attr('class','asm-key');
-  	key.append('rect').attr('x',w*3.5).attr('height',w).attr('width',w).attr('class','asm-atgc');
-  	key.append('text').attr('x',w*4.5+2).attr('y',w-1).text('AT').attr('class','asm-key');
-  	key.append('rect').attr('x',w*7).attr('height',w).attr('width',w).attr('class','asm-ns');
-  	key.append('text').attr('x',w*8+2).attr('y',w-1).text('N').attr('class','asm-key');
+  	key.append('text').attr('x',w+2).attr('y',w-1).text('GC ('+this.GC+'%)').attr('class','asm-key');
+  	key.append('rect').attr('y',w*1.5).attr('height',w).attr('width',w).attr('class','asm-atgc');
+  	key.append('text').attr('x',w+2).attr('y',w*2.5-1).text('AT ('+(atgc-this.GC).toFixed(1)+'%)').attr('class','asm-key');
+  	key.append('rect').attr('y',w*3).attr('height',w).attr('width',w).attr('class','asm-ns');
+  	key.append('text').attr('x',w+2).attr('y',w*4-1).text('N ('+n.toFixed(1)+'%)').attr('class','asm-key');
   	
 
   var txt = g.append('text')
-        .attr('transform', 'translate('+(size/2-180)+','+(-size/2+20)+')')
+        .attr('transform', 'translate('+(-size/2+10)+','+(-size/2+20)+')')
         .attr('class','asm-tr_title');
   	txt.append('tspan').text('Scaffold length');
   	txt.append('tspan').text('distribution').attr('x',0).attr('dy',20);
   	//txt.append('tspan').text('distribution').attr('x',0).attr('dy',20);
   	
-  	var key = g.append('g').attr('transform', 'translate('+(size/2-180)+','+(-size/2+50)+')');
+  	var key = g.append('g').attr('transform', 'translate('+(-size/2+10)+','+(-size/2+50)+')');
   	key.append('rect').attr('height',w).attr('width',w).attr('class','asm-pie');
   	//key.append('text').attr('x',w+2).attr('y',w-1).text('(Scaffold length)').attr('class','asm-key').append('tspan').attr('baseline-shift','super').attr('font-size','75%').text(0.5);
-  	key.append('text').attr('x',w+2).attr('y',w-1).text('Scaffold length').attr('class','asm-key');
+  	key.append('text').attr('x',w+2).attr('y',w-1).text('Scaffold length (total '+getReadableSeqSizeString(this.assembly,0)+')').attr('class','asm-key');
   	key.append('rect').attr('y',w*1.5).attr('height',w).attr('width',w).attr('class','asm-pie');
   	key.append('rect').attr('y',w*1.5).attr('height',w).attr('width',w).attr('class','asm-longest_pie');
   	key.append('text').attr('x',w+2).attr('y',w*2.5-1).text('Longest scaffold ('+getReadableSeqSizeString(this.scaffolds[0])+')').attr('class','asm-key');
@@ -288,13 +288,13 @@ Assembly.prototype.drawPlot = function(parent,size,margin,tick){
   	
 
     var txt = g.append('text')
-        .attr('transform', 'translate('+(-size/2+10)+','+(-size/2+20)+')')
+        .attr('transform', 'translate('+(-size/2+10)+','+(size/2-70)+')')
         .attr('class','asm-bl_title');
   	txt.append('tspan').text('Cumulative');
   	txt.append('tspan').text('scaffold number').attr('x',0).attr('dy',20);
   	//txt.append('tspan').text('distribution').attr('x',0).attr('dy',20);
   	
-  	var key = g.append('g').attr('transform', 'translate('+(-size/2+10)+','+(-size/2+50)+')');
+  	var key = g.append('g').attr('transform', 'translate('+(-size/2+10)+','+(size/2-43)+')');
   	key.append('rect').attr('height',w).attr('width',w).attr('class','asm-count');
   	var count_txt = key.append('text').attr('x',w+2).attr('y',w-1).attr('class','asm-key')
   		count_txt.append('tspan').text('Log')

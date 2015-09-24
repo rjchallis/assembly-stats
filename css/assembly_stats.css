@@ -17,7 +17,7 @@
   text.asm-length_label { dominant-baseline:middle; text-anchor:start; stroke:none; :#666666; }
   text.asm-assembly_label { dominant-baseline:middle; text-anchor:start; fill:white; visibility:hidden; }
   text.asm-tl_title { dominant-baseline:middle; text-anchor:start; fill:black; font-size:12pt; }
-  text.asm-br_title { dominant-baseline:middle; text-anchor:end; fill:black; font-size:12pt; }
+  text.asm-br_title { dominant-baseline:middle; text-anchor:start; fill:black; font-size:12pt; }
   text.asm-bl_title { dominant-baseline:middle; text-anchor:start; fill:black; font-size:12pt; }
   text.asm-tr_title { dominant-baseline:middle; text-anchor:start; fill:black; font-size:12pt; }
   .asm-key { dominant-baseline:auto; text-anchor:start; fill:#666666; font-size:10pt; }
