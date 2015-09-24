@@ -112,11 +112,11 @@ Assembly.prototype.drawPlot = function(parent,size,margin,tick){
   percent_axis(g,radii,this.scale['percent']);
   
    
-    
+    var long_pct = -1;
   this.seq.forEach(function(i,index){
   	if (i <= 1000){
-  		if (npct[i] == scaffolds[0]){
-  		  plot_arc(g,radii.core[1] - lScale(npct[i]),radii.core[1],0,i * 360 / 1000 * (Math.PI/180),'asm-longest_pie');
+  		if (npct[i] == scaffolds[0] && npct[(i+1)] < scaffolds[0]){
+  		  long_pct = i;
   		}
   		else if (npct[i] < scaffolds[0]){
   		  plot_arc(g,radii.core[1] - lScale(npct[i]),radii.core[1],0,i * 360 / 1000 * (Math.PI/180),'asm-pie');
@@ -124,10 +124,12 @@ Assembly.prototype.drawPlot = function(parent,size,margin,tick){
   	  }
   });
   
-    
   plot_arc(g,radii.core[1] - lScale(npct[500]),radii.core[1],0,500 * 360 / 1000 * (Math.PI/180),'asm-n50_pie');
   plot_arc(g,radii.core[1] - lScale(npct[900]),radii.core[1],0,900 * 360 / 1000 * (Math.PI/180),'asm-n90_pie');
   
+  if (long_pct > -1){
+  plot_arc(g,radii.core[1] - lScale(npct[long_pct]),radii.core[1],0,long_pct * 360 / 1000 * (Math.PI/180),'asm-longest_pie');
+  }
   
   
   
