@@ -68,7 +68,7 @@ Assembly.prototype.drawPlot = function(parent,size,margin,tick){
   radii.proportion.majorTick = [radii.proportion[0],radii.proportion[0]+tick];
   radii.proportion.minorTick = [radii.proportion[0],radii.proportion[0]+tick/2];
   
-  radii.percent = [radii.core[1]+tick*4,radii.core[1]+tick*8];;
+  radii.percent = [radii.core[1]+tick*4,radii.core[1]];;
   radii.percent.majorTick = [radii.percent[0],radii.percent[0]-tick];
   radii.percent.minorTick = [radii.percent[0],radii.percent[0]-tick/2];
   
@@ -99,6 +99,19 @@ Assembly.prototype.drawPlot = function(parent,size,margin,tick){
 		.attr('r',radii.core[1] - cScale(i))
 		.attr('class','axis');
     });*/
+   
+   
+   plot_arc(g,radii.percent[0],radii.percent[1],this.scale['percent'](0),this.scale['percent'](100),'asm-ns');
+  var atgc = this.ATGC * 100;
+  var n = 100 - atgc;
+  var gc_start = n / 100 * this.GC;
+  plot_arc(g,radii.percent[0],radii.percent[1],this.scale['percent'](gc_start),this.scale['percent'](gc_start+atgc),'asm-atgc');
+  plot_arc(g,radii.percent[0],radii.percent[1],this.scale['percent'](gc_start),this.scale['percent'](this.GC),'asm-gc');
+  
+  
+  percent_axis(g,radii,this.scale['percent']);
+  
+   
     
   this.seq.forEach(function(i,index){
   	if (i <= 1000){
@@ -236,15 +249,6 @@ Assembly.prototype.drawPlot = function(parent,size,margin,tick){
   //plot_rect(g,radii.percent[1],radii.core[1],Math.abs(radii.proportion[1]-radii.proportion[0]),this.scale['percent'](100),'asm-ns');
   //plot_rect(g,radii.percent[1],radii.core[1],Math.abs(radii.proportion[1]-radii.proportion[0]),this.scale['percent'](100*this.ATGC),'asm-atgc');
   //plot_rect(g,radii.percent[1],radii.core[1],Math.abs(radii.proportion[1]-radii.proportion[0]),this.scale['percent'](this.GC),'asm-gc');
-  plot_arc(g,radii.percent[0],radii.percent[1],this.scale['percent'](0),this.scale['percent'](100),'asm-ns');
-  var atgc = this.ATGC * 100;
-  var n = 100 - atgc;
-  var gc_start = n / 100 * this.GC;
-  plot_arc(g,radii.percent[0],radii.percent[1],this.scale['percent'](gc_start),this.scale['percent'](gc_start+atgc),'asm-atgc');
-  plot_arc(g,radii.percent[0],radii.percent[1],this.scale['percent'](gc_start),this.scale['percent'](this.GC),'asm-gc');
-  
-  
-  percent_axis(g,radii,this.scale['percent']);
   var txt = g.append('text')
         .attr('transform', 'translate('+(size/2-10)+','+(size/2-70)+')')
         .attr('class','asm-br_title');
