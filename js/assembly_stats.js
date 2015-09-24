@@ -68,9 +68,9 @@ Assembly.prototype.drawPlot = function(parent,size,margin,tick){
   radii.proportion.majorTick = [radii.proportion[0],radii.proportion[0]+tick];
   radii.proportion.minorTick = [radii.proportion[0],radii.proportion[0]+tick/2];
   
-  radii.percent = radii.proportion;
-  radii.percent.majorTick = radii.proportion.majorTick;
-  radii.percent.minorTick = radii.proportion.minorTick;
+  radii.percent = [radii.core[1]+tick*4,radii.core[1]+tick*8];;
+  radii.percent.majorTick = [radii.percent[0],radii.percent[0]-tick];
+  radii.percent.minorTick = [radii.percent[0],radii.percent[0]-tick/2];
   
   this.radii = radii;
   
@@ -244,7 +244,7 @@ Assembly.prototype.drawPlot = function(parent,size,margin,tick){
   plot_arc(g,radii.percent[0],radii.percent[1],this.scale['percent'](gc_start),this.scale['percent'](this.GC),'asm-gc');
   
   
-  //percent_axis(g,radii,this.scale['percent']);
+  percent_axis(g,radii,this.scale['percent']);
   var txt = g.append('text')
         .attr('transform', 'translate('+(size/2-10)+','+(size/2-70)+')')
         .attr('class','asm-br_title');
@@ -428,7 +428,8 @@ function proportion_axis (parent,radii,scale){
 
 function percent_axis (parent,radii,scale){
 
-
+  //round_mod
+  /*
   var g = parent.append('g');
   g.attr('transform','translate(0,20)')
   var line = g.append('line');
@@ -462,7 +463,7 @@ function percent_axis (parent,radii,scale){
     });
    //square_mod
    return;
-
+  */
 
 	var g = parent.append('g');
 	var axis = d3.svg.arc()
@@ -485,6 +486,8 @@ function percent_axis (parent,radii,scale){
             .attr('class', 'asm-majorTick');
         
     });
+    //round_mod
+    /*
     var seq = Array.apply(0, Array(11)).map(function (x, y) { return y * 10; });
   seq.forEach(function(d,index){
   
@@ -494,7 +497,7 @@ function percent_axis (parent,radii,scale){
           .text(function(){return d > 0 && d < 100 ? d : d+'%'})
           .attr('transform', 'translate('+x+','+y+') rotate('+(180+scale(d)/(Math.PI/180))+')');
 	})
-
+    */
 	var seq = Array.apply(0, Array(50)).map(function (x, y) { return y*2; });
   seq.forEach(function(d){
     var arc = d3.svg.arc()
