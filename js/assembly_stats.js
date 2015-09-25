@@ -58,7 +58,10 @@ Assembly.prototype.drawPlot = function(parent,size,margin,tick){
   size = 600;
   margin = 100;
   tick = 10;
-  parent.attr('width', size).attr('height', size)
+  parent.attr('width', '100%')
+  		.attr('height', '100%')
+  		.attr('viewBox','0 0 '+size+' '+size)
+  		.attr('preserveAspectRatio','xMidyMid')
   var radii = {};
   radii.core = [0,(size-margin*2-tick*2)/2];
   radii.core.majorTick = [radii.core[1],radii.core[1]+tick];

@@ -17,11 +17,9 @@
       var asm = new Assembly (stats,scaffolds);
       $(document).ready(function(){
           var svg = d3.select('#assembly_stats')
-            		.append('svg')
-    	        	.attr('width', 600)
-    		        .attr('height', 600);
+            		.append('svg');
   
-          asm.drawPlot(svg,600,100,10);
+          asm.drawPlot(svg);
         });
     </script>
     <div id="assembly_stats"></div> 
