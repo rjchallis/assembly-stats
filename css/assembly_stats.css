@@ -2,6 +2,8 @@
   .asm-genome { stroke:none; stroke-width:2px; fill:rgb(178,223,138); }
   .asm-atgc { fill:rgb(166,206,227); }
   .asm-gc { fill:rgb(31,120,180); }
+  .asm-ceg_comp { stroke:none; stroke-width:2px; fill:rgb(51,160,44); }
+  .asm-ceg_part { stroke:none; stroke-width:2px; fill:rgb(178,223,138); }
   .asm-count { stroke:none; fill:rgb(202,178,214); }
   .asm-count_axis { stroke:white; stroke-width:2px; fill:none; }
   .asm-length_axis { stroke:#555555; stroke-width:0.67px; fill:none; opacity:0.6; }

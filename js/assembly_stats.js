@@ -21,6 +21,8 @@ function Assembly( stats,scaffolds ) {
   this.N = stats.N ? stats.N < 100 ? stats.N < 1 ? stats.N : stats.N / 100 : stats.N / this.assembly : 0;
   this.ATGC = stats.ATGC ? stats.ATGC < 100 ? stats.ATGC < 1 ? stats.ATGC : stats.ATGC / 100 : stats.ATGC / this.assembly : 1 - this.N;
   this.GC = stats.GC;// < 100 ? stats.GC < 1 ? stats.GC : stats.GC / 100 : 50; // TODO: fix last condition 
+  this.COMP = stats.CEG_comp;// < 100 ? stats.GC < 1 ? stats.GC : stats.GC / 100 : 50; // TODO: fix last condition 
+  this.PART = stats.CEG_part;// < 100 ? stats.GC < 1 ? stats.GC : stats.GC / 100 : 50; // TODO: fix last condition 
   this.scaffolds = scaffolds.sort(function(a, b){return b-a});
   var npct = {};
   var npct_len = {};
@@ -61,7 +63,7 @@ Assembly.prototype.drawPlot = function(parent,size,margin,tick){
   parent.attr('width', '100%')
   		.attr('height', '100%')
   		.attr('viewBox','0 0 '+size+' '+size)
-  		.attr('preserveAspectRatio','xMidyMid')
+  		.attr('preserveAspectRatio','xMidYMid meet')
   var radii = {};
   radii.core = [0,(size-margin*2-tick*2)/2];
   radii.core.majorTick = [radii.core[1],radii.core[1]+tick];
@@ -74,6 +76,10 @@ Assembly.prototype.drawPlot = function(parent,size,margin,tick){
   radii.percent = [radii.core[1]+tick*4,radii.core[1]];;
   radii.percent.majorTick = [radii.percent[0],radii.percent[0]-tick];
   radii.percent.minorTick = [radii.percent[0],radii.percent[0]-tick/2];
+  
+  radii.ceg = [0,tick*2,tick*4];
+  radii.ceg.majorTick = [radii.ceg[2],radii.ceg[2]+tick/1.5];
+  radii.ceg.minorTick = [radii.ceg[2],radii.ceg[2]+tick/3];
   
   this.radii = radii;
   
@@ -111,6 +117,12 @@ Assembly.prototype.drawPlot = function(parent,size,margin,tick){
   plot_arc(g,radii.percent[0],radii.percent[1],this.scale['percent'](gc_start),this.scale['percent'](gc_start+atgc),'asm-atgc');
   plot_arc(g,radii.percent[0],radii.percent[1],this.scale['percent'](gc_start),this.scale['percent'](this.GC),'asm-gc');
   
+  if (this.COMP){
+   var cg = g.append('g').attr('transform','translate('+(radii.percent[1]+tick*3)+','+(-radii.percent[1]-tick*2)+')');
+  	 plot_arc(cg,radii.ceg[0],radii.ceg[1],this.scale['percent'](0),this.scale['percent'](this.COMP),'asm-ceg_comp');
+     plot_arc(cg,radii.ceg[1],radii.ceg[2],this.scale['percent'](0),this.scale['percent'](this.PART),'asm-ceg_part');
+  	cegma_axis(cg,radii,this.scale['percent']);
+  }
   
   percent_axis(g,radii,this.scale['percent']);
   
@@ -234,17 +246,19 @@ Assembly.prototype.drawPlot = function(parent,size,margin,tick){
         .text(this.assembly)
         .attr('transform', 'translate('+x+','+-y+') rotate('+(276)+')')
         .attr('class','asm-assembly_label');
-  	
+  	*/
   	var txt = g.append('text')
-        .attr('transform', 'translate('+(-size/2+10)+','+(size/2-70)+')')
-        .attr('class','asm-tl_title');
-  	txt.append('tspan').text('Relative assembly');
-  	txt.append('tspan').text('size').attr('x',0).attr('dy',18);
+        .attr('transform', 'translate('+(size/2-230)+','+(-size/2+20)+')')
+        .attr('class','asm-tr_title');
+  	txt.append('tspan').text('CEGMA completeness');
   	//txt.append('tspan').text('size').attr('x',0).attr('dy',18);
-      var key = g.append('g').attr('transform', 'translate('+(-size/2+10)+','+(size/2-43)+')');
-  	key.append('rect').attr('height',w).attr('width',w).attr('class','asm-genome');
-  	key.append('text').attr('x',w+2).attr('y',w-1).text(getReadableSeqSizeString(this.assembly)+' = '+(this.assembly/this.scaffolds[0]).toFixed(0)+' x longest scaffold').attr('class','asm-key');
-  	 */
+  	//txt.append('tspan').text('size').attr('x',0).attr('dy',18);
+      var key = g.append('g').attr('transform', 'translate('+(size/2-230)+','+(-size/2+28)+')');
+  	key.append('rect').attr('height',w).attr('width',w).attr('class','asm-ceg_comp');
+  	key.append('text').attr('x',w+2).attr('y',w-1).text('Complete ('+this.COMP.toFixed(1)+'%)').attr('class','asm-key');
+  	key.append('rect').attr('y',w*1.5).attr('height',w).attr('width',w).attr('class','asm-ceg_part');
+  	key.append('text').attr('x',w+2).attr('y',w*2.5-1).text('Partial ('+this.PART.toFixed(1)+'%)').attr('class','asm-key');
+  	 
 
   //square_mod
   //round_mod
@@ -272,7 +286,7 @@ Assembly.prototype.drawPlot = function(parent,size,margin,tick){
 
   var txt = g.append('text')
         .attr('transform', 'translate('+(-size/2+10)+','+(-size/2+20)+')')
-        .attr('class','asm-tr_title');
+        .attr('class','asm-tl_title');
   	txt.append('tspan').text('Scaffold length');
   	txt.append('tspan').text('distribution').attr('x',0).attr('dy',20);
   	//txt.append('tspan').text('distribution').attr('x',0).attr('dy',20);
@@ -524,6 +538,55 @@ function percent_axis (parent,radii,scale){
 	
 }
 
+
+function cegma_axis (parent,radii,scale){
+
+  
+
+	var g = parent.append('g');
+	var axis = d3.svg.arc()
+      	.innerRadius(radii.ceg[2])
+        .outerRadius(radii.ceg[2])
+        .startAngle(scale(0) )
+        .endAngle(scale(100));
+      g.append('path')
+        .attr('d', axis)
+        .attr('class', 'asm-axis');
+  var seq = Array.apply(0, Array(10)).map(function (x, y) { return y * 10; });
+  seq.forEach(function(d,index){
+    var arc = d3.svg.arc()
+      			.innerRadius(radii.ceg.majorTick[0])
+        		.outerRadius(radii.ceg.majorTick[1])
+        		.startAngle(scale(d) )
+        		.endAngle(scale(d));
+  	    g.append('path')
+  		    .attr('d',arc)
+            .attr('class', 'asm-majorTick');
+        if (d % 20 == 0){
+        var x = Math.cos(scale(d)-Math.PI/2)*(radii.ceg.majorTick[1]+5);
+        var y = Math.sin(scale(d)-Math.PI/2)*(radii.ceg.majorTick[1]+5);
+        g.append('text')
+        .text(function(){return d > 0 ? d : d+'%'})
+        .attr('transform', 'translate('+x+','+y+') rotate('+scale(d)/(Math.PI/180)+')');
+        }
+    });
+    
+    var seq = Array.apply(0, Array(21)).map(function (x, y) { return y*5; });
+  seq.forEach(function(d){
+    var arc = d3.svg.arc()
+      			.innerRadius(radii.ceg.minorTick[0])
+        		.outerRadius(radii.ceg.minorTick[1])
+        		.startAngle(scale(d) )
+        		.endAngle(scale(d));
+  	g.append('path')
+  		.attr('d',arc)
+        .attr('class', 'asm-minorTick');
+    });
+
+    
+  
+	
+}
 
 function plot_arc (parent,inner,outer,start,end,css){
 	var arc = d3.svg.arc()
