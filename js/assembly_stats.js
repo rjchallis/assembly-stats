@@ -176,10 +176,10 @@ Assembly.prototype.drawPlot = function(parent){
         }
   	});
   	
-  	//plot scaffold count data
+  	//plot scaffold cound data
   	var scg = g.append('g')
       .attr("id","asm-g-scaffold_count");
-  var scdg = scg.append('g')
+  var scdg = slg.append('g')
       .attr("id","asm-g-scaffold_count_data");
   var power = 6;
   while (npct_count[1000] < Math.pow(10,power)){
@@ -192,7 +192,7 @@ Assembly.prototype.drawPlot = function(parent){
   });
   
   // plot scaffold count gridlines
-  var scgg = scg.append('g')
+  var scgg = slg.append('g')
       .attr("id","asm-g-scaffold_count_gridlines");
   this.seq.forEach(function(i,index){
   	if (i <= 1000){
@@ -207,7 +207,7 @@ Assembly.prototype.drawPlot = function(parent){
   // plot radial axis
   var mag = g.append('g')
       .attr("id","asm-g-main_axis");
-  var slag = mag.append('g')
+  var slag = slg.append('g')
       .attr("id","asm-g-scaffold_length_axis");
   
   length_seq.forEach(function(i,index){
