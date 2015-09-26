@@ -176,7 +176,7 @@ Assembly.prototype.drawPlot = function(parent){
         }
   	});
   	
-  	//plot scaffold cound data
+  	//plot scaffold count data
   	var scg = g.append('g')
       .attr("id","asm-g-scaffold_count");
   var scdg = scg.append('g')
@@ -207,7 +207,7 @@ Assembly.prototype.drawPlot = function(parent){
   // plot radial axis
   var mag = g.append('g')
       .attr("id","asm-g-main_axis");
-  var slag = slg.append('g')
+  var slag = mag.append('g')
       .attr("id","asm-g-scaffold_length_axis");
   
   length_seq.forEach(function(i,index){
