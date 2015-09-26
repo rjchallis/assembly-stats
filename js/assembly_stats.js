@@ -121,6 +121,8 @@ Assembly.prototype.drawPlot = function(parent,size,margin,tick){
    var cg = g.append('g').attr('transform','translate('+(radii.percent[1]+tick*3)+','+(-radii.percent[1]-tick*2)+')');
   	 plot_arc(cg,radii.ceg[0],radii.ceg[1],this.scale['percent'](0),this.scale['percent'](this.COMP),'asm-ceg_comp');
      plot_arc(cg,radii.ceg[1],radii.ceg[2],this.scale['percent'](0),this.scale['percent'](this.PART),'asm-ceg_part');
+     cg.append('circle').attr('r',radii.ceg[1]).attr('class','asm-ceg_line');
+     cg.append('line').attr('y2',-radii.ceg[2]).attr('class','asm-axis');
   	cegma_axis(cg,radii,this.scale['percent']);
   }
   
