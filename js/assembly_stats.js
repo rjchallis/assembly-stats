@@ -179,7 +179,7 @@ Assembly.prototype.drawPlot = function(parent){
   	//plot scaffold cound data
   	var scg = g.append('g')
       .attr("id","asm-g-scaffold_count");
-  var scdg = slg.append('g')
+  var scdg = scg.append('g')
       .attr("id","asm-g-scaffold_count_data");
   var power = 6;
   while (npct_count[1000] < Math.pow(10,power)){
@@ -192,7 +192,7 @@ Assembly.prototype.drawPlot = function(parent){
   });
   
   // plot scaffold count gridlines
-  var scgg = slg.append('g')
+  var scgg = scg.append('g')
       .attr("id","asm-g-scaffold_count_gridlines");
   this.seq.forEach(function(i,index){
   	if (i <= 1000){
