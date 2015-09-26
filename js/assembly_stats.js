@@ -346,137 +346,8 @@ function circumference_axis (parent,radii){
   	});
 }
 
-function proportion_axis (parent,radii,scale){
-  var g = parent.append('g');
-  g.attr('transform','translate(0,20)')
-  var line = g.append('line');
-  	line.attr('x1',-radii.proportion[0])
-  	    .attr('y1',radii.core[1])
-  	    .attr('x2',-radii.proportion[0])
-        .attr('y2',radii.core[1]-scale(100000))
-        .attr('class', 'asm-axis');
-   
-   var seq = Array.apply(0, Array(6)).map(function (x, y) { return Math.pow(10,y); });
-  seq.forEach(function(d,index){
-    var line = g.append('line');
-  	line.attr('x1',-radii.proportion.majorTick[0])
-  	    .attr('y1',radii.core[1]-scale(d))
-  	    .attr('x2',-radii.proportion.majorTick[1])
-        .attr('y2',radii.core[1]-scale(d))
-        .attr('class', 'asm-axis');
-        g.append('text')
-          .text(function(){return index < 6 ? Math.pow(10,index) : 10 + '^' +index})
-          .attr('transform', 'translate('+(-radii.proportion.majorTick[1]-10)+','+(radii.core[1]-scale(d))+') rotate(270)');
-    });
-
-  var minor = [];
-    
-  seq.forEach(function(d,index){
-  	var tmp = Array.apply(0, Array(9)).map(function (x, y) { return d*(y+1) });
-  	if (index < seq.length - 1)	minor = minor.concat(tmp);
-  });
-  minor.forEach(function(d){
-   var line = g.append('line');
-  	line.attr('x1',-radii.proportion.minorTick[0])
-  	    .attr('y1',radii.core[1]-scale(d))
-  	    .attr('x2',-radii.proportion.minorTick[1])
-        .attr('y2',radii.core[1]-scale(d))
-        .attr('class', 'asm-axis');
-    });
-   //square_mod
-   return;
-   
-   
-   
-	var g = parent.append('g');
-	var axis = d3.svg.arc()
-      	.innerRadius(radii.proportion[0])
-        .outerRadius(radii.proportion[0])
-        .startAngle(scale(1) )
-        .endAngle(scale(100000));
-      g.append('path')
-        .attr('d', axis)
-        .attr('class', 'asm-axis');
-  var seq = Array.apply(0, Array(6)).map(function (x, y) { return Math.pow(10,y); });
-  seq.forEach(function(d,index){
-    var arc = d3.svg.arc()
-      			.innerRadius(radii.proportion.majorTick[0])
-        		.outerRadius(radii.proportion.majorTick[1])
-        		.startAngle(scale(d) )
-        		.endAngle(scale(d));
-  	    g.append('path')
-  	  	  .attr('d',arc)
-          .attr('class', 'asm-majorTick');
-        var x = Math.cos(scale(d)-Math.PI/2)*(radii.proportion.majorTick[1]+10);
-        var y = Math.sin(scale(d)-Math.PI/2)*(radii.proportion.majorTick[1]+10);
-        g.append('text')
-          .text(function(){return index < 6 ? Math.pow(10,index) : 10 + '^' +index})
-          .attr('transform', 'translate('+x+','+y+')  rotate('+scale(d)/(Math.PI/180)+')');
-    });
-
-
-	var minor = [];
-    
-  seq.forEach(function(d,index){
-  	var tmp = Array.apply(0, Array(9)).map(function (x, y) { return d*(y+1) });
-  	if (index < seq.length - 1)	minor = minor.concat(tmp);
-  });
-  
-  minor.forEach(function(d){
-    var arc = d3.svg.arc()
-      			.innerRadius(radii.proportion.minorTick[0])
-        		.outerRadius(radii.proportion.minorTick[1])
-        		.startAngle(scale(d) )
-        		.endAngle(scale(d));
-  	g.append('path')
-  		.attr('d',arc)
-        .attr('class', 'asm-minorTick');
-    });
-    
-  
-	
-}
-
 
 function percent_axis (parent,radii,scale){
-
-  //round_mod
-  /*
-  var g = parent.append('g');
-  g.attr('transform','translate(0,20)')
-  var line = g.append('line');
-  	line.attr('x1',radii.percent[0])
-  	    .attr('y1',radii.core[1])
-  	    .attr('x2',radii.percent[0])
-        .attr('y2',radii.core[1]-scale(100))
-        .attr('class', 'asm-axis');
-   
-   var seq = Array.apply(0, Array(11)).map(function (x, y) { return y*10; });
-  seq.forEach(function(d,index){
-    var line = g.append('line');
-  	line.attr('x1',radii.percent.majorTick[0])
-  	    .attr('y1',radii.core[1]-scale(d))
-  	    .attr('x2',radii.percent.majorTick[1])
-        .attr('y2',radii.core[1]-scale(d))
-        .attr('class', 'asm-axis');
-        g.append('text')
-          .text(function(){return d > 0 && d < 100 ? d : d+'%'})
-          .attr('transform', 'translate('+(radii.proportion.majorTick[1]+10)+','+(radii.core[1]-scale(d))+') rotate(90)');
-    });
-
-  var seq = Array.apply(0, Array(50)).map(function (x, y) { return y*2; });
-  seq.forEach(function(d){
-   var line = g.append('line');
-  	line.attr('x1',radii.proportion.minorTick[0])
-  	    .attr('y1',radii.core[1]-scale(d))
-  	    .attr('x2',radii.proportion.minorTick[1])
-        .attr('y2',radii.core[1]-scale(d))
-        .attr('class', 'asm-axis');
-    });
-   //square_mod
-   return;
-  */
-
 	var g = parent.append('g');
 	var axis = d3.svg.arc()
       	.innerRadius(radii.percent[0])
@@ -498,18 +369,6 @@ function percent_axis (parent,radii,scale){
             .attr('class', 'asm-majorTick');
         
     });
-    //round_mod
-    /*
-    var seq = Array.apply(0, Array(11)).map(function (x, y) { return y * 10; });
-  seq.forEach(function(d,index){
-  
-    var x = Math.cos(scale(d)-Math.PI/2)*(radii.percent.majorTick[1]+10);
-    var y = Math.sin(scale(d)-Math.PI/2)*(radii.percent.majorTick[1]+10);
-        g.append('text')
-          .text(function(){return d > 0 && d < 100 ? d : d+'%'})
-          .attr('transform', 'translate('+x+','+y+') rotate('+(180+scale(d)/(Math.PI/180))+')');
-	})
-    */
 	var seq = Array.apply(0, Array(50)).map(function (x, y) { return y*2; });
   seq.forEach(function(d){
     var arc = d3.svg.arc()
@@ -521,17 +380,10 @@ function percent_axis (parent,radii,scale){
   		.attr('d',arc)
         .attr('class', 'asm-minorTick');
     });
-
-    
-  
-	
 }
 
 
 function cegma_axis (parent,radii,scale){
-
-  
-
 	var g = parent.append('g');
 	var axis = d3.svg.arc()
       	.innerRadius(radii.ceg[2])
@@ -572,9 +424,6 @@ function cegma_axis (parent,radii,scale){
         .attr('class', 'asm-minorTick');
     });
 
-    
-  
-	
 }
 
 function plot_arc (parent,inner,outer,start,end,css){
