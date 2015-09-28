@@ -248,9 +248,9 @@ Assembly.prototype.drawPlot = function(parent){
         .attr('class','asm-tr_title');
   	txt.append('tspan').text('CEGMA completeness');
   	  var key = lccg.append('g').attr('transform', 'translate('+(size/2-230)+','+(-size/2+28)+')');
-  	key.append('rect').attr('height',w).attr('width',w).attr('class','asm-ceg_comp');
+  	key.append('rect').attr('height',w).attr('width',w).attr('class','asm-ceg_comp asm-toggle');
   	key.append('text').attr('x',w+2).attr('y',w-1).text('Complete ('+this.cegma_complete.toFixed(1)+'%)').attr('class','asm-key');
-  	key.append('rect').attr('y',w*1.5).attr('height',w).attr('width',w).attr('class','asm-ceg_part');
+  	key.append('rect').attr('y',w*1.5).attr('height',w).attr('width',w).attr('class','asm-ceg_part asm-toggle');
   	key.append('text').attr('x',w+2).attr('y',w*2.5-1).text('Partial ('+this.cegma_partial.toFixed(1)+'%)').attr('class','asm-key');
   }
 
@@ -263,11 +263,11 @@ Assembly.prototype.drawPlot = function(parent){
   	txt.append('tspan').text('Assembly');
   	txt.append('tspan').text('base composition').attr('x',0).attr('dy',18);
   	var key = lbcg.append('g').attr('transform', 'translate('+(size/2-140)+','+(size/2-83)+')');
-  	key.append('rect').attr('height',w).attr('width',w).attr('class','asm-gc');
+  	key.append('rect').attr('height',w).attr('width',w).attr('class','asm-gc asm-toggle');
   	key.append('text').attr('x',w+2).attr('y',w-1).text('GC ('+this.GC+'%)').attr('class','asm-key');
-  	key.append('rect').attr('y',w*1.5).attr('height',w).attr('width',w).attr('class','asm-atgc');
+  	key.append('rect').attr('y',w*1.5).attr('height',w).attr('width',w).attr('class','asm-atgc asm-toggle');
   	key.append('text').attr('x',w+2).attr('y',w*2.5-1).text('AT ('+(atgc-this.GC).toFixed(1)+'%)').attr('class','asm-key');
-  	key.append('rect').attr('y',w*3).attr('height',w).attr('width',w).attr('class','asm-ns');
+  	key.append('rect').attr('y',w*3).attr('height',w).attr('width',w).attr('class','asm-ns asm-toggle');
   	key.append('text').attr('x',w+2).attr('y',w*4-1).text('N ('+n.toFixed(1)+'%)').attr('class','asm-key');
   	
 
@@ -281,16 +281,16 @@ Assembly.prototype.drawPlot = function(parent){
   	txt.append('tspan').text('distribution').attr('x',0).attr('dy',20);
   	
   	var key = lslg.append('g').attr('transform', 'translate('+(-size/2+10)+','+(-size/2+50)+')');
-  	key.append('rect').attr('height',w).attr('width',w).attr('class','asm-pie');
+  	key.append('rect').attr('height',w).attr('width',w).attr('class','asm-pie asm-toggle');
   	key.append('text').attr('x',w+2).attr('y',w-1).text('Scaffold length (total '+getReadableSeqSizeString(this.assembly,0)+')').attr('class','asm-key');
   	key.append('rect').attr('y',w*1.5).attr('height',w).attr('width',w).attr('class','asm-pie');
-  	key.append('rect').attr('y',w*1.5).attr('height',w).attr('width',w).attr('class','asm-longest_pie');
+  	key.append('rect').attr('y',w*1.5).attr('height',w).attr('width',w).attr('class','asm-longest_pie asm-toggle');
   	key.append('text').attr('x',w+2).attr('y',w*2.5-1).text('Longest scaffold ('+getReadableSeqSizeString(this.scaffolds[0])+')').attr('class','asm-key');
   	key.append('rect').attr('y',w*3).attr('height',w).attr('width',w).attr('class','asm-pie');
-  	key.append('rect').attr('y',w*3).attr('height',w).attr('width',w).attr('class','asm-n50_pie');
+  	key.append('rect').attr('y',w*3).attr('height',w).attr('width',w).attr('class','asm-n50_pie asm-toggle');
   	key.append('text').attr('x',w+2).attr('y',w*4-1).text('N50 length ('+getReadableSeqSizeString(this.npct_length[500])+')').attr('class','asm-key');
   	key.append('rect').attr('y',w*4.5).attr('height',w).attr('width',w).attr('class','asm-pie');
-  	key.append('rect').attr('y',w*4.5).attr('height',w).attr('width',w).attr('class','asm-n90_pie');
+  	key.append('rect').attr('y',w*4.5).attr('height',w).attr('width',w).attr('class','asm-n90_pie asm-toggle');
   	key.append('text').attr('x',w+2).attr('y',w*5.5-1).text('N90 length ('+getReadableSeqSizeString(this.npct_length[900])+')').attr('class','asm-key');
   	
 
@@ -304,11 +304,42 @@ Assembly.prototype.drawPlot = function(parent){
   	txt.append('tspan').text('scaffold number').attr('x',0).attr('dy',20);
   	
   	var key = lscg.append('g').attr('transform', 'translate('+(-size/2+10)+','+(size/2-43)+')');
-  	key.append('rect').attr('height',w).attr('width',w).attr('class','asm-count');
+  	key.append('rect').attr('height',w).attr('width',w).attr('class','asm-count asm-toggle');
   	var count_txt = key.append('text').attr('x',w+2).attr('y',w-1).attr('class','asm-key')
   		count_txt.append('tspan').text('Log')
   		count_txt.append('tspan').attr('baseline-shift','sub').attr('font-size','75%').text(10)
   		count_txt.append('tspan').text(' scaffold count (total '+this.scaffolds.length.toLocaleString()+')');
+  	
+  	// toggle plot features
+  	$('.asm-toggle').on('click',function(){
+  		var button = this;
+  		var classNames = $(this).attr("class").toString().split(' ');
+  		if ($(button).css('fill') != "rgb(255, 255, 255)"){
+  		  $(button).css({fill: "rgb(255, 255, 255)" });
+  		  $.each(classNames, function (i, className) {
+              if (className != 'asm-toggle'){
+        	    $('.'+className).each(function(){ 
+        	      if (this != button){ 
+            	    $(this).css({visibility: "hidden" })
+            	  }
+            	});
+              }
+          });
+        }
+        else {
+          var stroke = $(button).css("stroke");
+          $(button).css({fill: stroke });
+          $.each(classNames, function (i, className) {
+              if (className != 'asm-toggle'){
+        	    $('.'+className).each(function(){ 
+            	  if (this != button){ 
+            	    $(this).css({visibility: "visible" })
+            	  }
+            	});
+              }
+          });
+        }
+  	})
   	
 }
 
