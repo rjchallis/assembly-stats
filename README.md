@@ -1,2 +1,2 @@
 
-![Screenshot](http://rjchallis.github.com/assembly_stats/screenshots/assembly_stats.png "Screenshot")
+![Screenshot](http://rjchallis.github.io/assembly_stats/screenshots/assembly_stats.png "Screenshot")
