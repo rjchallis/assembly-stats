@@ -62,7 +62,6 @@ function Assembly( stats,scaffolds ) {
   this.seq.forEach(function(i,index){
   	if (!nctg_length[i]) nctg_length[i] = nctg_length[(i+1)];
   	if (!nctg_count[i]) nctg_count[i] = nctg_count[(i+1)];
-  	console.log(i+' '+nctg_count[i]);
   });
   this.nctg_length = nctg_length;
   this.nctg_count = nctg_count;
