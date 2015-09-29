@@ -162,7 +162,31 @@ Assembly.prototype.drawPlot = function(parent){
       .attr("id","asm-g-base_composition_axis");
   percent_axis(bcag,radii,pScale);
   
-  
+  // plot expected genome size if available
+  if (this.genome){
+   var egg = g.append('g')
+       .attr('transform','translate('+(radii.percent[1]+tick*3)+','+(radii.percent[1]+tick*2)+')')
+      .attr("id","asm-expected_genome_size");
+  	var egdg = egg.append('g')
+       .attr("id","asm-expected_genome_size");
+  	 egdg.append('circle')
+  	     .attr('r',(Math.sqrt(this.genome/this.assembly)*radii.ceg[2]))
+  	     .attr('class','asm-genome');
+  	 egdg.append('circle')
+  	     .attr('r',radii.ceg[2])
+  	     .attr('class','asm-assembly');
+  	 egdg.append('circle')
+  	     .attr('r',(Math.sqrt(this.genome/this.assembly)*radii.ceg[2]))
+  	     .attr('class','asm-genome')
+  	     .attr('style','fill:none;');
+  	 egdg.append('circle')
+  	     .attr('r',radii.ceg[2])
+  	     .attr('class','asm-axis');
+  	 egdg.append('line')
+  	     .attr('y1',-radii.ceg[2])
+  	     .attr('class','asm-axis');
+  	 
+  }
   
   // plot CEGMA completeness if available
   if (this.cegma_complete){
