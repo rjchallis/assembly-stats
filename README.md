@@ -22,6 +22,7 @@ The goal of assembly_stats is to overcome some of these shortcomings to produce 
 
 ##plot descritption
 
+* click on any colour tile in the legend to toggle visibility of that feature on/off
 * The inner radius of the circular plot represents the length of the longest scaffold in the assembly
 * The angle subtended by the first (red) segment within this plot indicates the percentage of the assembly that is in the longest scaffold
 * The radial axis originates at the circumference and indicates scaffold length
@@ -30,9 +31,7 @@ The goal of assembly_stats is to overcome some of these shortcomings to produce 
 The cumulative number of scaffolds within a given percentge of the genome is plotted in purple originating at the centre of the plot
 * White scale lines are drawn at successive orders of magnitude from 10 scaffolds onwards
 * The fill colour of the circumferential axis indicates the percentage base composition of the assembly: AT = light blue; GC = dark blue; N = grey
+* Contig length (if available) is indicated by darker grey segments overlaying the scaffold length plot 
+* Contig count (if available) may be toggled on to be shown in place of the scaffold count plot
+* Partial and complete CEGMA values (if available) are shown in light and dark green, respectively in the smaller plot in the upper right corner 
 
-##coming soon...
-
-CONTIGS AS DARKER SEGMENTS 
-
-EXPECTED ASSEMBLY SIZE AROUND PERIMETER OF CENTRAL PLOT
