@@ -278,7 +278,7 @@ Assembly.prototype.drawPlot = function(parent){
   	
   	// plot scaffold/contig count gridlines
   if (!this.contigs){
-  var scgg = g.append('g')
+  var scgg = scg.append('g')
       .attr("id","asm-g-scaffold_count_gridlines");
   this.seq.forEach(function(i,index){
   	if (i <= 1000){
@@ -290,7 +290,7 @@ Assembly.prototype.drawPlot = function(parent){
   });
   }
   else {
-  var ctcgg = g.append('g')
+  var ctcgg = scg.append('g')
       .attr("id","asm-g-contig_count_gridlines");
   this.seq.forEach(function(i,index){
   	if (i <= 1000){
@@ -352,7 +352,7 @@ Assembly.prototype.drawPlot = function(parent){
   	key.append('rect').attr('y',w*1.5).attr('height',w).attr('width',w).attr('class','asm-ceg_part asm-toggle');
   	key.append('text').attr('x',w+2).attr('y',w*2.5-1).text('Partial ('+this.cegma_partial.toFixed(1)+'%)').attr('class','asm-key');
   }
-
+/*
    //draw base composition legend
    var lbcg = lg.append('g')
       .attr("id","asm-g-base_composition_legend");
@@ -368,46 +368,61 @@ Assembly.prototype.drawPlot = function(parent){
   	key.append('text').attr('x',w+2).attr('y',w*2.5-1).text('AT ('+(atgc-this.GC).toFixed(1)+'%)').attr('class','asm-key');
   	key.append('rect').attr('y',w*3).attr('height',w).attr('width',w).attr('class','asm-ns asm-toggle');
   	key.append('text').attr('x',w+2).attr('y',w*4-1).text('N ('+n.toFixed(1)+'%)').attr('class','asm-key');
-  	
+  	*/
 
-   //draw scaffold length legend
-   var lslg = lg.append('g')
-      .attr("id","asm-g-scaffold_length_legend");
-   var txt = lslg.append('text')
+   //draw scaffold legend
+   var lsg = lg.append('g')
+      .attr("id","asm-g-scaffold_legend");
+   var txt = lsg.append('text')
         .attr('transform', 'translate('+(-size/2+10)+','+(-size/2+20)+')')
         .attr('class','asm-tl_title');
-  	txt.append('tspan').text('Scaffold length');
-  	txt.append('tspan').text('distribution').attr('x',0).attr('dy',20);
+  	txt.append('tspan').text('Scaffold statistics');
+  	//txt.append('tspan').text('distribution').attr('x',0).attr('dy',20);
   	
-  	var key = lslg.append('g').attr('transform', 'translate('+(-size/2+10)+','+(-size/2+50)+')');
-  	key.append('rect').attr('height',w).attr('width',w).attr('class','asm-pie asm-toggle');
-  	key.append('text').attr('x',w+2).attr('y',w-1).text('Scaffold length (total '+getReadableSeqSizeString(this.assembly,0)+')').attr('class','asm-key');
-  	key.append('rect').attr('y',w*1.5).attr('height',w).attr('width',w).attr('class','asm-pie');
-  	key.append('rect').attr('y',w*1.5).attr('height',w).attr('width',w).attr('class','asm-longest_pie asm-toggle');
-  	key.append('text').attr('x',w+2).attr('y',w*2.5-1).text('Longest scaffold ('+getReadableSeqSizeString(this.scaffolds[0])+')').attr('class','asm-key');
-  	key.append('rect').attr('y',w*3).attr('height',w).attr('width',w).attr('class','asm-pie');
-  	key.append('rect').attr('y',w*3).attr('height',w).attr('width',w).attr('class','asm-n50_pie asm-toggle');
-  	key.append('text').attr('x',w+2).attr('y',w*4-1).text('N50 length ('+getReadableSeqSizeString(this.npct_length[500])+')').attr('class','asm-key');
-  	key.append('rect').attr('y',w*4.5).attr('height',w).attr('width',w).attr('class','asm-pie');
-  	key.append('rect').attr('y',w*4.5).attr('height',w).attr('width',w).attr('class','asm-n90_pie asm-toggle');
-  	key.append('text').attr('x',w+2).attr('y',w*5.5-1).text('N90 length ('+getReadableSeqSizeString(this.npct_length[900])+')').attr('class','asm-key');
-  	
-
-    //draw scaffold count legend
-   var lscg = lg.append('g')
-      .attr("id","asm-g-scaffold_count_legend");
-   var txt = lscg.append('text')
-        .attr('transform', 'translate('+(-size/2+10)+','+(size/2-70)+')')
-        .attr('class','asm-bl_title');
-  	txt.append('tspan').text('Cumulative');
-  	txt.append('tspan').text('scaffold number').attr('x',0).attr('dy',20);
-  	
-  	var key = lscg.append('g').attr('transform', 'translate('+(-size/2+10)+','+(size/2-43)+')');
+  	var key = lsg.append('g').attr('transform', 'translate('+(-size/2+10)+','+(-size/2+28)+')');
   	key.append('rect').attr('height',w).attr('width',w).attr('class','asm-count asm-toggle');
-  	var count_txt = key.append('text').attr('x',w+2).attr('y',w-1).attr('class','asm-key')
+  	var count_txt = key.append('text').attr('x',w+3).attr('y',w-1).attr('class','asm-key')
   		count_txt.append('tspan').text('Log')
   		count_txt.append('tspan').attr('baseline-shift','sub').attr('font-size','75%').text(10)
   		count_txt.append('tspan').text(' scaffold count (total '+this.scaffolds.length.toLocaleString()+')');
+  	key.append('rect').attr('y',w*1.5).attr('height',w).attr('width',w).attr('class','asm-pie asm-toggle');
+  	key.append('text').attr('x',w+3).attr('y',w*2.5-1).text('Scaffold length (total '+getReadableSeqSizeString(this.assembly,0)+')').attr('class','asm-key');
+  	
+  	
+  	key.append('rect').attr('y',w*3).attr('height',w).attr('width',w).attr('class','asm-longest_pie asm-toggle');
+  	key.append('text').attr('x',w+3).attr('y',w*4-1).text('Longest scaffold ('+getReadableSeqSizeString(this.scaffolds[0])+')').attr('class','asm-key');
+  	key.append('rect').attr('y',w*4.5).attr('height',w).attr('width',w).attr('class','asm-n50_pie asm-toggle');
+  	key.append('text').attr('x',w+3).attr('y',w*5.5-1).text('N50 length ('+getReadableSeqSizeString(this.npct_length[500])+')').attr('class','asm-key');
+  	key.append('rect').attr('y',w*6).attr('height',w).attr('width',w).attr('class','asm-n90_pie asm-toggle');
+  	key.append('text').attr('x',w+3).attr('y',w*7-1).text('N90 length ('+getReadableSeqSizeString(this.npct_length[900])+')').attr('class','asm-key');
+  	
+  	key.append('rect').attr('y',w*7.5).attr('height',w).attr('width',w).attr('class','asm-gc asm-toggle');
+  	key.append('text').attr('x',w+3).attr('y',w*8.5-1).text('GC ('+this.GC+'%)').attr('class','asm-key');
+  	key.append('rect').attr('y',w*9).attr('height',w).attr('width',w).attr('class','asm-atgc asm-toggle');
+  	key.append('text').attr('x',w+3).attr('y',w*10-1).text('AT ('+(atgc-this.GC).toFixed(1)+'%)').attr('class','asm-key');
+  	key.append('rect').attr('y',w*10.5).attr('height',w).attr('width',w).attr('class','asm-ns asm-toggle');
+  	key.append('text').attr('x',w+3).attr('y',w*11.5-1).text('N ('+n.toFixed(1)+'%)').attr('class','asm-key');
+  	
+
+    //draw contig legend if available
+	if (this.contigs){
+   var lctg = lg.append('g')
+      .attr("id","asm-g-contig_legend");
+   var txt = lctg.append('text')
+        .attr('transform', 'translate('+(-size/2+10)+','+(size/2-70)+')')
+        .attr('class','asm-bl_title');
+  	txt.append('tspan').text('Contig statistics');
+  	
+  	var key = lctg.append('g').attr('transform', 'translate('+(-size/2+10)+','+(size/2-62)+')');
+  	key.append('rect').attr('height',w).attr('width',w).attr('class','asm-contig_count asm-toggle');
+  	var count_txt = key.append('text').attr('x',w+2).attr('y',w-1).attr('class','asm-key')
+  		count_txt.append('tspan').text('Log')
+  		count_txt.append('tspan').attr('baseline-shift','sub').attr('font-size','75%').text(10)
+  		count_txt.append('tspan').text(' contig count (total '+this.contigs.length.toLocaleString()+')');
+  	key.append('rect').attr('y',w*1.5).attr('height',w).attr('width',w).attr('class','asm-contig asm-toggle');
+  	key.append('text').attr('x',w+3).attr('y',w*2.5-1).text('Contig length').attr('class','asm-key');
+  	}
+  	
   	
   	// toggle plot features
   	$('.asm-toggle').on('click',function(){
