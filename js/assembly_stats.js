@@ -262,7 +262,7 @@ Assembly.prototype.drawPlot = function(parent){
   });
   
   // plot contig lengths if available
-  if (this.contig){
+  if (this.contigs){
   var clg = g.append('g')
       .attr("id","asm-g-contig_length");
   var cldg = slg.append('g')
