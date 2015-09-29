@@ -53,15 +53,16 @@ function Assembly( stats,scaffolds ) {
   var lsum = 0;
   this.contigs.forEach(function(length,index,array){
 	var new_sum = lsum + length;
-	if (Math.floor(new_sum/sum*1000) > Math.floor(lsum/sum*100)){
-		nctg_length[Math.floor(new_sum/sum*1000)] = length;
-		nctg_count[Math.floor(new_sum/sum*1000)] = index;
+	if (Math.floor(new_sum/ctgsum*1000) > Math.floor(lsum/ctgsum*100)){
+		nctg_length[Math.floor(new_sum/ctgsum*1000)] = length;
+		nctg_count[Math.floor(new_sum/ctgsum*1000)] = index;
 	}
 	lsum = new_sum;
   });
   this.seq.forEach(function(i,index){
-  	if (!nctg_length[i]) nnctg_length[i] = nctg_length[(i+1)];
+  	if (!nctg_length[i]) nctg_length[i] = nctg_length[(i+1)];
   	if (!nctg_count[i]) nctg_count[i] = nctg_count[(i+1)];
+  	console.log(i+' '+nctg_count[i]);
   });
   this.nctg_length = nctg_length;
   this.nctg_count = nctg_count;
@@ -162,7 +163,7 @@ Assembly.prototype.drawPlot = function(parent){
       .attr("id","asm-g-base_composition_axis");
   percent_axis(bcag,radii,pScale);
   
-  // plot expected genome size if available
+  /* plot expected genome size if available
   if (this.genome){
    var egg = g.append('g')
        .attr('transform','translate('+(radii.percent[1]+tick*4)+','+(radii.percent[1])+')')
@@ -179,15 +180,15 @@ Assembly.prototype.drawPlot = function(parent){
   	     .attr('r',(Math.sqrt(this.genome/this.assembly)*radii.genome[1]))
   	     .attr('class','asm-genome')
   	     .attr('style','fill:none;');
-  	/* egdg.append('circle')
+  	 egdg.append('circle')
   	     .attr('r',radii.genome[1])
   	     .attr('class','asm-axis');
   	 egdg.append('line')
   	     .attr('y1',-radii.genome[1])
   	     .attr('class','asm-axis');
-  	 */
+  	 
   }
-  
+  */
   // plot CEGMA completeness if available
   if (this.cegma_complete){
    var ccg = g.append('g')
@@ -217,7 +218,7 @@ Assembly.prototype.drawPlot = function(parent){
   }
   this.seq.forEach(function(i,index){
   	if (i <= 1000){
-  		plot_arc(ctcdg,radii.core[0],radii.core[1] - cScale(nctg_count[i]),pScale(i/10),pScale(100),'asm-contig_count');
+  		plot_arc(ctcdg,radii.core[0],radii.core[1] - cScale(nctg_count[i]),pScale(i/10),pScale(100),'asm-contig_count asm-remote');
   	  }
   });
   	}
@@ -376,7 +377,7 @@ Assembly.prototype.drawPlot = function(parent){
   	key.append('rect').attr('y',w*1.5).attr('height',w).attr('width',w).attr('class','asm-ceg_part asm-toggle');
   	key.append('text').attr('x',w+3).attr('y',w*2.5-1).text('Partial ('+this.cegma_partial.toFixed(1)+'%)').attr('class','asm-key');
   }
-/*
+
    //draw base composition legend
    var lbcg = lg.append('g')
       .attr("id","asm-g-base_composition_legend");
@@ -392,23 +393,18 @@ Assembly.prototype.drawPlot = function(parent){
   	key.append('text').attr('x',w+2).attr('y',w*2.5-1).text('AT ('+(atgc-this.GC).toFixed(1)+'%)').attr('class','asm-key');
   	key.append('rect').attr('y',w*3).attr('height',w).attr('width',w).attr('class','asm-ns asm-toggle');
   	key.append('text').attr('x',w+2).attr('y',w*4-1).text('N ('+n.toFixed(1)+'%)').attr('class','asm-key');
-  	*/
+  	
 
-   //draw genome size  legend if available
+   /*draw genome size  legend if available
    if (this.genome){
    var legg = lg.append('g')
       .attr("id","asm-g-genome_legend");
-   /*var txt = legg.append('text')
-        .attr('transform', 'translate('+(size/2-140)+','+(size/2-110)+')')
-        .attr('class','asm-br_title');
-  	txt.append('tspan').text('Assembly');
-  	txt.append('tspan').text('base composition').attr('x',0).attr('dy',18);*/
-  	var key = legg.append('g').attr('transform', 'translate('+(size/2-190)+','+(size/2-62)+')');
+    var key = legg.append('g').attr('transform', 'translate('+(size/2-190)+','+(size/2-62)+')');
   	key.append('rect').attr('height',w).attr('width',w).attr('class','asm-assembly asm-toggle');
   	key.append('text').attr('x',w+3).attr('y',w-1).text('Assembly length ('+getReadableSeqSizeString(this.assembly,0)+')').attr('class','asm-key');
   	key.append('rect').attr('y',w*1.5).attr('height',w).attr('width',w).attr('class','asm-genome asm-toggle');
   	key.append('text').attr('x',w+3).attr('y',w*2.5-1).text('Expected length ('+getReadableSeqSizeString(this.genome,0)+')').attr('class','asm-key');
-  	}
+  	}*/
 
    //draw scaffold legend
    var lsg = lg.append('g')
@@ -435,14 +431,14 @@ Assembly.prototype.drawPlot = function(parent){
   	key.append('text').attr('x',w+3).attr('y',w*5.5-1).text('N50 length ('+getReadableSeqSizeString(this.npct_length[500])+')').attr('class','asm-key');
   	key.append('rect').attr('y',w*6).attr('height',w).attr('width',w).attr('class','asm-n90_pie asm-toggle');
   	key.append('text').attr('x',w+3).attr('y',w*7-1).text('N90 length ('+getReadableSeqSizeString(this.npct_length[900])+')').attr('class','asm-key');
-  	
+  	/*
   	key.append('rect').attr('y',w*7.5).attr('height',w).attr('width',w).attr('class','asm-gc asm-toggle');
   	key.append('text').attr('x',w+3).attr('y',w*8.5-1).text('GC ('+this.GC+'%)').attr('class','asm-key');
   	key.append('rect').attr('y',w*9).attr('height',w).attr('width',w).attr('class','asm-atgc asm-toggle');
   	key.append('text').attr('x',w+3).attr('y',w*10-1).text('AT ('+(atgc-this.GC).toFixed(1)+'%)').attr('class','asm-key');
   	key.append('rect').attr('y',w*10.5).attr('height',w).attr('width',w).attr('class','asm-ns asm-toggle');
   	key.append('text').attr('x',w+3).attr('y',w*11.5-1).text('N ('+n.toFixed(1)+'%)').attr('class','asm-key');
-  	
+  	*/
 
     //draw contig legend if available
 	if (this.contigs){
@@ -490,6 +486,14 @@ Assembly.prototype.drawPlot = function(parent){
             	    $(this).css({visibility: "visible" })
             	  }
             	});
+              }
+              if (className == 'asm-count'){
+        	    $('.asm-contig_count.asm-toggle').css({fill: "rgb(255, 255, 255)" })
+            	$('.asm-contig_count.asm-remote').css({visibility: "hidden" })
+              }
+              if (className == 'asm-contig_count'){
+        	    $('.asm-count.asm-toggle').css({fill: "rgb(255, 255, 255)" })
+            	$('.asm-count.asm-remote').css({visibility: "hidden" })
               }
           });
         }
