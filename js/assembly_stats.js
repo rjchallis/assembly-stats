@@ -233,7 +233,7 @@ Assembly.prototype.drawPlot = function(parent){
   }
   this.seq.forEach(function(i,index){
   	if (i <= 1000){
-  		plot_arc(scdg,radii.core[0],radii.core[1] - cScale(npct_count[i]),pScale(i/10),pScale(100),'asm-count');
+  		plot_arc(scdg,radii.core[0],radii.core[1] - cScale(npct_count[i]),pScale(i/10),pScale(100),'asm-count asm-remote');
   	  }
   });
   

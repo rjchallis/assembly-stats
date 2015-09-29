@@ -10,8 +10,8 @@
   .asm-ceg_comp { stroke:rgb(51,160,44); stroke-width:2px; fill:rgb(51,160,44); }
   .asm-ceg_part { stroke:rgb(178,223,138); stroke-width:2px; fill:rgb(178,223,138); }
   .asm-ceg_line { stroke:#555555; stroke-width:0.67px; fill:none; opacity:0.6; }
-  .asm-contig_count { stroke:rgb(202,178,214); stroke-width:2px; fill:rgb(255,255,255); visibility:hidden; }
-  .asm-contig_count.asm-toggle { visibility:visible; }
+  .asm-contig_count { stroke:rgb(202,178,214); stroke-width:2px; fill:rgb(202,178,214); visibility:hidden; }
+  .asm-contig_count.asm-toggle { visibility:visible; fill:rgb(255,255,255); }
   .asm-count { stroke:rgb(202,178,214); stroke-width:2px; fill:rgb(202,178,214); }
   .asm-count_axis { stroke:white; stroke-width:2px; fill:none; }
   .asm-length_axis { stroke:#555555; stroke-width:0.67px; fill:none; opacity:0.6; }
