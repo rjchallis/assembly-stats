@@ -102,7 +102,7 @@ Assembly.prototype.drawPlot = function(parent){
   radii.percent.majorTick = [radii.percent[0],radii.percent[0]-tick];
   radii.percent.minorTick = [radii.percent[0],radii.percent[0]-tick/2];
   
-  radii.genome = [radii.percent[0],radii.percent[0]+tick*2];;
+  radii.genome = [0,tick*3];;
   
   radii.ceg = [0,tick*2,tick*4];
   radii.ceg.majorTick = [radii.ceg[2],radii.ceg[2]+tick/1.5];
@@ -165,27 +165,27 @@ Assembly.prototype.drawPlot = function(parent){
   // plot expected genome size if available
   if (this.genome){
    var egg = g.append('g')
-       .attr('transform','translate('+(radii.percent[1]+tick*3)+','+(radii.percent[1]+tick*2)+')')
+       .attr('transform','translate('+(radii.percent[1]+tick*4)+','+(radii.percent[1])+')')
       .attr("id","asm-expected_genome_size");
   	var egdg = egg.append('g')
        .attr("id","asm-expected_genome_size");
   	 egdg.append('circle')
-  	     .attr('r',(Math.sqrt(this.genome/this.assembly)*radii.ceg[2]))
+  	     .attr('r',(Math.sqrt(this.genome/this.assembly)*radii.genome[1]))
   	     .attr('class','asm-genome');
   	 egdg.append('circle')
-  	     .attr('r',radii.ceg[2])
+  	     .attr('r',radii.genome[1])
   	     .attr('class','asm-assembly');
   	 egdg.append('circle')
-  	     .attr('r',(Math.sqrt(this.genome/this.assembly)*radii.ceg[2]))
+  	     .attr('r',(Math.sqrt(this.genome/this.assembly)*radii.genome[1]))
   	     .attr('class','asm-genome')
   	     .attr('style','fill:none;');
-  	 egdg.append('circle')
-  	     .attr('r',radii.ceg[2])
+  	/* egdg.append('circle')
+  	     .attr('r',radii.genome[1])
   	     .attr('class','asm-axis');
   	 egdg.append('line')
-  	     .attr('y1',-radii.ceg[2])
+  	     .attr('y1',-radii.genome[1])
   	     .attr('class','asm-axis');
-  	 
+  	 */
   }
   
   // plot CEGMA completeness if available
@@ -372,9 +372,9 @@ Assembly.prototype.drawPlot = function(parent){
   	txt.append('tspan').text('CEGMA completeness');
   	  var key = lccg.append('g').attr('transform', 'translate('+(size/2-230)+','+(-size/2+28)+')');
   	key.append('rect').attr('height',w).attr('width',w).attr('class','asm-ceg_comp asm-toggle');
-  	key.append('text').attr('x',w+2).attr('y',w-1).text('Complete ('+this.cegma_complete.toFixed(1)+'%)').attr('class','asm-key');
+  	key.append('text').attr('x',w+3).attr('y',w-1).text('Complete ('+this.cegma_complete.toFixed(1)+'%)').attr('class','asm-key');
   	key.append('rect').attr('y',w*1.5).attr('height',w).attr('width',w).attr('class','asm-ceg_part asm-toggle');
-  	key.append('text').attr('x',w+2).attr('y',w*2.5-1).text('Partial ('+this.cegma_partial.toFixed(1)+'%)').attr('class','asm-key');
+  	key.append('text').attr('x',w+3).attr('y',w*2.5-1).text('Partial ('+this.cegma_partial.toFixed(1)+'%)').attr('class','asm-key');
   }
 /*
    //draw base composition legend
@@ -393,6 +393,22 @@ Assembly.prototype.drawPlot = function(parent){
   	key.append('rect').attr('y',w*3).attr('height',w).attr('width',w).attr('class','asm-ns asm-toggle');
   	key.append('text').attr('x',w+2).attr('y',w*4-1).text('N ('+n.toFixed(1)+'%)').attr('class','asm-key');
   	*/
+
+   //draw genome size  legend if available
+   if (this.genome){
+   var legg = lg.append('g')
+      .attr("id","asm-g-genome_legend");
+   /*var txt = legg.append('text')
+        .attr('transform', 'translate('+(size/2-140)+','+(size/2-110)+')')
+        .attr('class','asm-br_title');
+  	txt.append('tspan').text('Assembly');
+  	txt.append('tspan').text('base composition').attr('x',0).attr('dy',18);*/
+  	var key = legg.append('g').attr('transform', 'translate('+(size/2-190)+','+(size/2-62)+')');
+  	key.append('rect').attr('height',w).attr('width',w).attr('class','asm-assembly asm-toggle');
+  	key.append('text').attr('x',w+3).attr('y',w-1).text('Assembly length ('+getReadableSeqSizeString(this.assembly,0)+')').attr('class','asm-key');
+  	key.append('rect').attr('y',w*1.5).attr('height',w).attr('width',w).attr('class','asm-genome asm-toggle');
+  	key.append('text').attr('x',w+3).attr('y',w*2.5-1).text('Expected length ('+getReadableSeqSizeString(this.genome,0)+')').attr('class','asm-key');
+  	}
 
    //draw scaffold legend
    var lsg = lg.append('g')
