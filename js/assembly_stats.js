@@ -13,13 +13,15 @@
     return Math.max(seqSizeInBases, 0.1).toFixed(fixed) + baseUnits[i];
 };
  
-function Assembly( stats,scaffolds ) { 
+function Assembly( stats,scaffolds,contigs ) { 
   var sum = scaffolds.reduce(function(previousValue, currentValue, index, array) {
     return previousValue + currentValue;
   });
-  var ctgsum = contigs.reduce(function(previousValue, currentValue, index, array) {
-    return previousValue + currentValue;
-  });
+  if (contigs){
+  	var ctgsum = contigs.reduce(function(previousValue, currentValue, index, array) {
+  	  return previousValue + currentValue;
+  	});
+  }
   this.genome = stats.genome; 
   this.assembly = stats.assembly; 
   this.N = stats.N ? stats.N <= 100 ? stats.N < 1 ? stats.N * 100 : stats.N : stats.N / this.assembly * 100 : 0;
@@ -47,9 +49,12 @@ function Assembly( stats,scaffolds ) {
   this.npct_length = npct_length;
   this.npct_count = npct_count;
   
-  this.contigs = contigs.sort(function(a, b){return b-a});
   var nctg_length = {};
   var nctg_count = {};
+  
+  if (contigs){
+    this.contigs = contigs.sort(function(a, b){return b-a});
+  
   var lsum = 0;
   this.contigs.forEach(function(length,index,array){
 	var new_sum = lsum + length;
@@ -65,7 +70,7 @@ function Assembly( stats,scaffolds ) {
   });
   this.nctg_length = nctg_length;
   this.nctg_count = nctg_count;
-  
+  }
   
   this.scale = {};
   this.setScale('percent','linear',[0,100],[180* (Math.PI/180),90* (Math.PI/180)]);
@@ -257,6 +262,7 @@ Assembly.prototype.drawPlot = function(parent){
   });
   
   // plot contig lengths if available
+  if (this.contig){
   var clg = g.append('g')
       .attr("id","asm-g-contig_length");
   var cldg = slg.append('g')
@@ -266,7 +272,7 @@ Assembly.prototype.drawPlot = function(parent){
   		plot_arc(cldg,radii.core[1] - lScale(nctg_length[i]),radii.core[1],0,pScale(i/10),'asm-contig');
   	  }
   });
-  
+  }
   // highlight n50, n90 and longest scaffold 
   var slhg = slg.append('g')
       .attr("id","asm-g-scaffold_length_highlight");
