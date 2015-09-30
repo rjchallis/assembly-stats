@@ -516,9 +516,8 @@ Assembly.prototype.drawPlot = function(parent){
    		output_text.classed('hidden',false);
    		output_text.selectAll('text').remove();
    		var point = d3.mouse(this);
-   		var angle =  (50 + 50 / Math.PI * Math.atan2(-point[0],  point[1])).toFixed(0);
-   		console.log(angle);
-        
+   		var angle =  (50.5 + 50 / Math.PI * Math.atan2(-point[0],  point[1])).toFixed(0);
+   		
         var txt = output_text.append('text')
             .attr('class','asm-live_title');
   		txt.append('tspan').text('N'+angle);
