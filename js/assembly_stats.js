@@ -281,9 +281,9 @@ Assembly.prototype.drawPlot = function(parent){
   }
   plot_arc(slhg,radii.core[1] - lScale(npct_length[500]),radii.core[1],0,pScale(50),'asm-n50_pie');
   plot_arc(slhg,radii.core[1] - lScale(npct_length[900]),radii.core[1],0,pScale(90),'asm-n90_pie');
-  plot_arc(slhg,radii.core[1] - lScale(npct_length[500]),radii.core[1],pScale(50),pScale(50),'asm-n50_pie');
+  plot_arc(slhg,radii.core[1] - lScale(npct_length[500]),radii.core[1],pScale(50),pScale(50),'asm-n50_pie asm-highlight');
   if (long_pct > -1){
-    plot_arc(slhg,radii.core[1] - lScale(npct_length[long_pct]),radii.core[1],pScale(long_pct/10),pScale(long_pct/10),'asm-longest_pie');
+    plot_arc(slhg,radii.core[1] - lScale(npct_length[long_pct]),radii.core[1],pScale(long_pct/10),pScale(long_pct/10),'asm-longest_pie asm-highlight');
   }
   
   // add gridlines at powers of 10
@@ -502,8 +502,54 @@ Assembly.prototype.drawPlot = function(parent){
               }
           });
         }
-  	})
+  	});
   	
+  	
+  	// show stats for any N value on mouseover
+  	var overlay = g.append('g');
+  	var path = overlay.append('path');
+  	var overoverlay = g.append('g');
+  	var output = g.append('g').attr('transform', 'translate('+(size/2-142)+','+(size/2-128)+')');
+  	var output_rect = output.append('rect').attr('class', 'asm-live_stats');
+  	var output_text = output.append('g').attr('transform', 'translate('+(2)+','+(18)+')').attr('class', 'hidden');
+  	var stat_circle = overoverlay.append('circle').attr('r',radii.core[1]).attr('fill','white').style('opacity',0);
+  	stat_circle.on('mousemove', function () {
+  	    output_rect.classed('hidden',false);
+   		output_text.classed('hidden',false);
+   		path.classed('hidden',false);
+   		output_text.selectAll('text').remove();
+   		
+   		
+   		var point = d3.mouse(this);
+   		var angle =  (50.5 + 50 / Math.PI * Math.atan2(-point[0],  point[1])).toFixed(0);
+   		
+   		
+   		
+	var arc = d3.svg.arc()
+      	.innerRadius(radii.core[1])
+        .outerRadius(radii.core[0])
+        .startAngle(pScale(angle-1))
+        .endAngle(pScale(angle));
+      path
+        .attr('d', arc)
+        .attr('class', 'asm-live_segment');
+
+   		
+        var txt = output_text.append('text')
+            .attr('class','asm-live_title');
+  		txt.append('tspan').text('N'+angle);
+  		output_text.append('text').attr('y',18).text(npct_count[(angle*10)].toLocaleString() + ' scaffolds').attr('class','asm-key');
+  		output_text.append('text').attr('x',120).attr('y',w*1.2+18).text('>= ' + getReadableSeqSizeString(npct_length[(angle*10)])).attr('class','asm-key asm-right');
+  		if (nctg_length){
+  			output_text.append('text').attr('y',w*3+18).text(nctg_count[(angle*10)].toLocaleString() + ' contigs').attr('class','asm-key');
+  			output_text.append('text').attr('x',120).attr('y',w*4.2+18).text('>= ' + getReadableSeqSizeString(nctg_length[(angle*10)])).attr('class','asm-key asm-right');
+  		}
+  	});
+	stat_circle.on('mouseout', function () {
+	    output_rect.classed('hidden',true);
+	    output_text.classed('hidden',true);
+	    path.classed('hidden',true);
+    });
 }
 
 function circumference_axis (parent,radii){
