@@ -510,7 +510,7 @@ Assembly.prototype.drawPlot = function(parent){
   	var path = overlay.append('path');
   	var overoverlay = g.append('g');
   	var output = g.append('g').attr('transform', 'translate('+(size/2-142)+','+(size/2-128)+')');
-  	var output_rect = output.append('rect').attr('class', 'asm-live_stats').attr('height',110).attr('width',150);
+  	var output_rect = output.append('rect').attr('class', 'asm-live_stats hidden').attr('height',110).attr('width',150);
   	var output_text = output.append('g').attr('transform', 'translate('+(2)+','+(18)+')').attr('class', 'hidden');
   	var stat_circle = overoverlay.append('circle').attr('r',radii.core[1]).attr('fill','white').style('opacity',0);
   	stat_circle.on('mousemove', function () {
