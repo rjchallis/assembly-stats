@@ -29,7 +29,7 @@
   .asm-majorTick { stroke:#555555; stroke-width:2px; fill:none; }
   .asm-minorTick { stroke:#555555; fill:none; }
   .asm-axis { stroke:#555555; stroke-width:2px; fill:none; }  
-  .asm-live_stats { fill:white; height:110px; width:150px; }
+  .asm-live_stats { fill:white; }
   text { dominant-baseline:middle; text-anchor:middle; font-size:8pt; font-family:sans-serif; fill:#555555; }
   text.asm-count_label { dominant-baseline:middle; text-anchor:end; fill:white; visibility:hidden; }
   text.asm-length_label { dominant-baseline:middle; text-anchor:start; stroke:none; :#555555; }
