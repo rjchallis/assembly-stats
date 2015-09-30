@@ -502,8 +502,37 @@ Assembly.prototype.drawPlot = function(parent){
               }
           });
         }
-  	})
+  	});
   	
+  	
+  	// show stats for any N value on mouseover
+  	var overlay = g.append('g');
+  	var output = g.append('g').attr('transform', 'translate('+(size/2-142)+','+(size/2-128)+')');
+  	var output_rect = output.append('rect').attr('class', 'asm-live_stats');
+  	var output_text = output.append('g').attr('transform', 'translate('+(2)+','+(18)+')').attr('class', 'hidden');
+  	var stat_circle = overlay.append('circle').attr('r',radii.core[1]).attr('fill','white').style('opacity',0);
+  	stat_circle.on('mousemove', function () {
+  	    output_rect.classed('hidden',false);
+   		output_text.classed('hidden',false);
+   		output_text.selectAll('text').remove();
+   		var point = d3.mouse(this);
+   		var angle =  (50 + 50 / Math.PI * Math.atan2(-point[0],  point[1])).toFixed(0);
+   		console.log(angle);
+        
+        var txt = output_text.append('text')
+            .attr('class','asm-live_title');
+  		txt.append('tspan').text('N'+angle);
+  		output_text.append('text').attr('y',18).text(npct_count[(angle*10)].toLocaleString() + ' scaffolds').attr('class','asm-key');
+  		output_text.append('text').attr('x',120).attr('y',w*1.2+18).text('>= ' + getReadableSeqSizeString(npct_length[(angle*10)])).attr('class','asm-key asm-right');
+  		if (nctg_length){
+  			output_text.append('text').attr('y',w*3+18).text(nctg_count[(angle*10)].toLocaleString() + ' contigs').attr('class','asm-key');
+  			output_text.append('text').attr('x',120).attr('y',w*4.2+18).text('>= ' + getReadableSeqSizeString(nctg_length[(angle*10)])).attr('class','asm-key asm-right');
+  		}
+  	});
+	stat_circle.on('mouseout', function () {
+	    output_rect.classed('hidden',true);
+	    output_text.classed('hidden',true);
+    });
 }
 
 function circumference_axis (parent,radii){
