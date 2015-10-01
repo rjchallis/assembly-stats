@@ -327,25 +327,19 @@ Assembly.prototype.drawPlot = function(parent){
   if (!this.contigs){
   var scgg = scg.append('g')
       .attr("id","asm-g-scaffold_count_gridlines");
-  this.seq.forEach(function(i,index){
-  	if (i <= 1000){
-  		if (npct_count[i] < Math.pow(10,power)){
-			plot_arc(scgg,radii.core[1] - cScale(Math.pow(10,power)),radii.core[1] - cScale(Math.pow(10,power)),pScale(i/10),pScale(100),'asm-count_axis');
-			power--;
-		}
-  	  }
+  [1,2,3,4,5,6,7].forEach(function(i,index){
+  	scgg.append('circle')
+  	    .attr('class','asm-count_axis')
+  	    .attr('r',(radii.core[1] - cScale(Math.pow(10,i))))
   });
   }
   else {
   var ctcgg = scg.append('g')
       .attr("id","asm-g-contig_count_gridlines");
-  this.seq.forEach(function(i,index){
-  	if (i <= 1000){
-  		if (nctg_count[i] < Math.pow(10,power)){
-			plot_arc(ctcgg,radii.core[1] - cScale(Math.pow(10,power)),radii.core[1] - cScale(Math.pow(10,power)),pScale(i/10),pScale(100),'asm-count_axis');
-			power--;
-		}
-  	  }
+  [1,2,3,4,5,6,7].forEach(function(i,index){
+  	ctcgg.append('circle')
+  	    .attr('class','asm-count_axis')
+  	    .attr('r',(radii.core[1] - cScale(Math.pow(10,i))))
   });
   }
   
