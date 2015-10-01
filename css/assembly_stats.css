@@ -32,7 +32,7 @@
   .asm-live_stats { fill:white; }
   text { dominant-baseline:middle; text-anchor:middle; font-size:8pt; font-family:sans-serif; fill:#555555; }
   text.asm-count_label { dominant-baseline:middle; text-anchor:end; fill:white; visibility:hidden; }
-  text.asm-length_label { dominant-baseline:middle; text-anchor:start; stroke:none; :#555555; }
+  text.asm-length_label { dominant-baseline:middle; text-anchor:start; stroke:none; fill:#555555; }
   text.asm-assembly_label { dominant-baseline:middle; text-anchor:start; fill:white; visibility:hidden; }
   text.asm-tl_title { dominant-baseline:middle; text-anchor:start; fill:black; font-size:12pt; }
   text.asm-br_title { dominant-baseline:middle; text-anchor:start; fill:black; font-size:12pt; }

@@ -363,7 +363,7 @@ Assembly.prototype.drawPlot = function(parent){
 	
 	// draw circumferential axis
 	circumference_axis(mag,radii);
-  
+  	
    // draw legends
    var lg = g.append('g')
       .attr("id","asm-g-legend");
@@ -469,7 +469,8 @@ Assembly.prototype.drawPlot = function(parent){
   	$('.asm-toggle').on('click',function(){
   		var button = this;
   		var classNames = $(this).attr("class").toString().split(' ');
-  		if ($(button).css('fill') != "rgb(255, 255, 255)"){
+  		console.log($(button).css('fill'));
+  		if ($(button).css('fill') != "rgb(255, 255, 255)" && $(button).css('fill') != "#ffffff"){
   		  $(button).css({fill: "rgb(255, 255, 255)" });
   		  $.each(classNames, function (i, className) {
               if (className != 'asm-toggle'){
@@ -508,8 +509,8 @@ Assembly.prototype.drawPlot = function(parent){
   	// show stats for any N value on mouseover
   	var overlay = g.append('g');
   	var path = overlay.append('path');
-  	var overoverlay = g.append('g');
-  	var output = g.append('g').attr('transform', 'translate('+(size/2-142)+','+(size/2-128)+')');
+  	var overoverlay = overlay.append('g');
+  	var output = overlay.append('g').attr('transform', 'translate('+(size/2-142)+','+(size/2-128)+')');
   	var output_rect = output.append('rect').attr('class', 'asm-live_stats hidden').attr('height',110).attr('width',150);
   	var output_text = output.append('g').attr('transform', 'translate('+(2)+','+(18)+')').attr('class', 'hidden');
   	var stat_circle = overoverlay.append('circle').attr('r',radii.core[1]).attr('fill','white').style('opacity',0);
