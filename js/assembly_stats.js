@@ -13,12 +13,12 @@
     return Math.max(seqSizeInBases, 0.1).toFixed(fixed) + baseUnits[i];
 };
  
-function Assembly( stats,scaffolds,contigs ) { 
-  var sum = scaffolds.reduce(function(previousValue, currentValue, index, array) {
+function Assembly( stats ) { 
+  var sum = stats.scaffolds.reduce(function(previousValue, currentValue, index, array) {
     return previousValue + currentValue;
   });
-  if (contigs){
-  	var ctgsum = contigs.reduce(function(previousValue, currentValue, index, array) {
+  if (stats.contigs){
+  	var ctgsum = stats.contigs.reduce(function(previousValue, currentValue, index, array) {
   	  return previousValue + currentValue;
   	});
   }
@@ -29,7 +29,7 @@ function Assembly( stats,scaffolds,contigs ) {
   this.GC = stats.GC ? stats.GC <= 100 ? stats.GC <= 1 ? stats.GC * 100 : stats.GC : stats.GC / this.assembly * 100 : 0;
   this.cegma_complete = stats.cegma_complete;
   this.cegma_partial = stats.cegma_partial;
-  this.scaffolds = scaffolds.sort(function(a, b){return b-a});
+  this.scaffolds = stats.scaffolds.sort(function(a, b){return b-a});
   var npct_length = {};
   var npct_count = {};
   var npct_GC = {};
@@ -63,8 +63,8 @@ function Assembly( stats,scaffolds,contigs ) {
   var nctg_length = {};
   var nctg_count = {};
   
-  if (contigs){
-    this.contigs = contigs.sort(function(a, b){return b-a});
+  if (stats.contigs){
+    this.contigs = stats.contigs.sort(function(a, b){return b-a});
   
   var lsum = 0;
   this.contigs.forEach(function(length,index,array){
@@ -324,7 +324,7 @@ Assembly.prototype.drawPlot = function(parent){
   var slgg = slg.append('g')
       .attr("id","asm-g-scaffold_length_gridlines");
   length_seq.forEach(function(i,index){
-  if(Math.pow(10,i+4) > this.scaffolds[0] && Math.pow(10,i+1) > npct_length[900] && Math.pow(10,i) < npct_length[100]){
+  if(Math.pow(10,i+4) > scaffolds[0] && Math.pow(10,i+1) > npct_length[900] && Math.pow(10,i) < npct_length[100]){
      slgg.append('circle')
   		.attr('r',radii.core[1]-lScale(Math.pow(10,i)))
   		.attr('cx',0)
@@ -362,7 +362,7 @@ Assembly.prototype.drawPlot = function(parent){
       .attr("id","asm-g-scaffold_length_axis");
   
   length_seq.forEach(function(i,index){
-        if(Math.pow(10,i+3) > this.scaffolds[0] && Math.pow(10,i+1) > npct_length[1000]){
+        if(Math.pow(10,i+3) > scaffolds[0] && Math.pow(10,i+1) > npct_length[1000]){
   slag.append('text')
   		.attr('transform','translate('+(Math.pow(1.5,i)+2)+','+(-radii.core[1]+lScale(Math.pow(10,i))+4)+')')
   		.text(getReadableSeqSizeString(Math.pow(10,i),0))
