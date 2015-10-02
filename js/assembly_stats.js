@@ -32,12 +32,19 @@ function Assembly( stats,scaffolds,contigs ) {
   this.scaffolds = scaffolds.sort(function(a, b){return b-a});
   var npct_length = {};
   var npct_count = {};
+  var npct_GC = {};
+  var npct_N = {};
+  function getRandomArbitrary(min, max) {
+    return Math.random() * (max - min) + min;
+  }
   var lsum = 0;
   this.scaffolds.forEach(function(length,index,array){
 	var new_sum = lsum + length;
 	if (Math.floor(new_sum/sum*1000) > Math.floor(lsum/sum*100)){
 		npct_length[Math.floor(new_sum/sum*1000)] = length;
 		npct_count[Math.floor(new_sum/sum*1000)] = index;
+		npct_GC[Math.floor(new_sum/sum*1000)] = getRandomArbitrary(30, 60);
+		npct_N[Math.floor(new_sum/sum*1000)] = getRandomArbitrary(0, 30);
 	}
 	lsum = new_sum;
   });
@@ -45,9 +52,13 @@ function Assembly( stats,scaffolds,contigs ) {
   this.seq.forEach(function(i,index){
   	if (!npct_length[i]) npct_length[i] = npct_length[(i+1)];
   	if (!npct_count[i]) npct_count[i] = npct_count[(i+1)];
+  	if (!npct_GC[i]) npct_GC[i] = npct_GC[(i+1)];
+  	if (!npct_N[i]) npct_N[i] = npct_N[(i+1)];
   });
   this.npct_length = npct_length;
   this.npct_count = npct_count;
+  this.npct_GC = npct_GC;
+  this.npct_N = npct_N;
   
   var nctg_length = {};
   var nctg_count = {};
@@ -74,6 +85,7 @@ function Assembly( stats,scaffolds,contigs ) {
   
   this.scale = {};
   this.setScale('percent','linear',[0,100],[180* (Math.PI/180),90* (Math.PI/180)]);
+  this.setScale('gc','linear',[0,100],[0,100]); // range will be updated when drawing
   this.setScale('count','log',[1,1e6],[100,1]); // range will be updated when drawing
   this.setScale('length','sqrt',[1,1e6],[1,100]); // range will be updated range when drawing
 }
@@ -120,14 +132,18 @@ Assembly.prototype.drawPlot = function(parent){
   this.scale['length'].range([radii.core[0],radii.core[1]])
   this.scale['count'].range([radii.core[1],radii.core[0]+radii.core[1]/3])
   this.scale['percent'].range([0,(2 * Math.PI)])
+  this.scale['gc'].range([radii.percent[0],radii.percent[1]])
   
   var lScale = this.scale['length'];
   var cScale = this.scale['count'];
   var pScale = this.scale['percent'];
+  var gScale = this.scale['gc'];
   var npct_length = this.npct_length;
   var npct_count = this.npct_count;
   var nctg_length = this.nctg_length;
   var nctg_count = this.nctg_count;
+  var nctg_GC = this.nctg_GC;
+  var nctg_N = this.nctg_N;
   var scaffolds = this.scaffolds;
   var contigs = this.contigs;
   
@@ -151,6 +167,7 @@ Assembly.prototype.drawPlot = function(parent){
     }
   }
   */
+      
       
   // draw base composition axis fill
   var bcg = g.append('g')
@@ -209,57 +226,64 @@ Assembly.prototype.drawPlot = function(parent){
   	 cegma_axis(ccag,radii,pScale);
   }
   
-  var power = 6;
+  var line = d3.svg.line()
+    .x(function(d,i) { return Math.cos(pScale(i/10-25))*(radii.core[1] - cScale(d)); })
+    .y(function(d,i) { return Math.sin(pScale(i/10-25))*(radii.core[1] - cScale(d)); });
   	
   	//plot contig count data if available
   	if(this.contigs){
-  	var ctcg = g.append('g')
-      .attr("id","asm-g-contig_count");
-  var ctcdg = ctcg.append('g')
-      .attr("id","asm-g-contig_count_data");
-  while (nctg_count[1000] < Math.pow(10,power)){
-  	power--;
-  }
-  this.seq.forEach(function(i,index){
-  	if (i <= 1000){
-  		plot_arc(ctcdg,radii.core[0],radii.core[1] - cScale(nctg_count[i]),pScale(i/10),pScale(100),'asm-contig_count asm-remote');
-  	  }
-  });
-  	}
+  	  var ctcg = g.append('g')
+          .attr("id","asm-g-contig_count");
+      var ctcdg = ctcg.append('g')
+          .attr("id","asm-g-contig_count_data");
+      var ctg_counts = $.map(this.nctg_count, function(value, index) {
+    	  return [value];
+		});
+	  ctcdg.append("path")
+  	      .datum(ctg_counts)
+          .attr("class", "asm-contig_count asm-remote")
+          .attr("d", line)
+      //.attr("fill-rule","evenodd");
+    }
   	//plot scaffold count data
   	var scg = g.append('g')
-      .attr("id","asm-g-scaffold_count");
-  var scdg = scg.append('g')
-      .attr("id","asm-g-scaffold_count_data");
-  if (!this.contigs){
-  while (npct_count[1000] < Math.pow(10,power)){
-  	power--;
-  }
-  }
-  this.seq.forEach(function(i,index){
-  	if (i <= 1000){
-  		plot_arc(scdg,radii.core[0],radii.core[1] - cScale(npct_count[i]),pScale(i/10),pScale(100),'asm-count asm-remote');
-  	  }
-  });
+        .attr("id","asm-g-scaffold_count");
+    var scdg = scg.append('g')
+        .attr("id","asm-g-scaffold_count_data");
+    var scaf_counts = $.map(this.npct_count, function(value, index) {
+    	 return [value];
+	  });
+	scdg.append("path")
+  	      .datum(scaf_counts)
+          .attr("class", "asm-count asm-remote")
+          .attr("d", line)
+      //.attr("fill-rule","evenodd");
   
   
   
+  //var zeros = Array.apply(0, Array(1000)).map(function (x, y) { return 0; });
+  //	var hollow = line(GCs)+' '+line(zeros)
+  	
+  	
   // plot scaffold lengths 
   var slg = g.append('g')
       .attr("id","asm-g-scaffold_length");
   var sldg = slg.append('g')
       .attr("id","asm-g-scaffold_length_data");
-  var long_pct = -1; // thousandths of genome covered by longest scaffold
-  this.seq.forEach(function(i,index){
-  	if (i <= 1000){
-  		if (npct_length[i] == scaffolds[0] && npct_length[(i+1)] < scaffolds[0]){
-  		  long_pct = i;
-  		}
-  		else if (npct_length[i] < scaffolds[0]){
-  		  plot_arc(sldg,radii.core[1] - lScale(npct_length[i]),radii.core[1],0,pScale(i/10),'asm-pie');
-  		}
-  	  }
-  });
+  
+  var line = d3.svg.line()
+    .x(function(d,i) { return Math.cos(pScale(i/10-25))*(radii.core[1] - lScale(d)); })
+    .y(function(d,i) { return Math.sin(pScale(i/10-25))*(radii.core[1] - lScale(d)); });
+  var scaf_lengths = $.map(this.npct_length, function(value, index) {
+      return [value];
+    });
+  var zeros = Array.apply(0, Array(1000)).map(function (x, y) { return 0; });
+  var hollow = line(zeros)+' '+line(scaf_lengths)
+  sldg.append("path")
+  	  .attr("class", "asm-pie")
+      .attr("d", hollow)
+      .attr("fill-rule","evenodd");
+  
   
   // plot contig lengths if available
   if (this.contigs){
@@ -267,23 +291,27 @@ Assembly.prototype.drawPlot = function(parent){
       .attr("id","asm-g-contig_length");
   var cldg = slg.append('g')
       .attr("id","asm-g-contig_length_data");
-  this.seq.forEach(function(i,index){
-  	if (i <= 1000){
-  		plot_arc(cldg,radii.core[1] - lScale(nctg_length[i]),radii.core[1],0,pScale(i/10),'asm-contig');
-  	  }
-  });
+  var ctg_lengths = $.map(this.nctg_length, function(value, index) {
+      return [value];
+    });
+  var hollow = line(zeros)+' '+line(ctg_lengths)
+  sldg.append("path")
+  	  .attr("class", "asm-contig")
+      .attr("d", hollow)
+      .attr("fill-rule","evenodd");
   }
   // highlight n50, n90 and longest scaffold 
   var slhg = slg.append('g')
       .attr("id","asm-g-scaffold_length_highlight");
-  if (long_pct > -1){
-    plot_arc(slhg,radii.core[1] - lScale(npct_length[long_pct]),radii.core[1],0,pScale(long_pct/10),'asm-longest_pie');
+  var long_pct = scaffolds[0] / this.assembly * 100;
+  if (long_pct >= 0.1){
+    plot_arc(slhg,radii.core[1] - lScale(npct_length[long_pct]),radii.core[1],0,pScale(long_pct),'asm-longest_pie');
   }
   plot_arc(slhg,radii.core[1] - lScale(npct_length[500]),radii.core[1],0,pScale(50),'asm-n50_pie');
   plot_arc(slhg,radii.core[1] - lScale(npct_length[900]),radii.core[1],0,pScale(90),'asm-n90_pie');
   plot_arc(slhg,radii.core[1] - lScale(npct_length[500]),radii.core[1],pScale(50),pScale(50),'asm-n50_pie asm-highlight');
-  if (long_pct > -1){
-    plot_arc(slhg,radii.core[1] - lScale(npct_length[long_pct]),radii.core[1],pScale(long_pct/10),pScale(long_pct/10),'asm-longest_pie asm-highlight');
+  if (long_pct >= 0.1){
+    plot_arc(slhg,radii.core[1] - lScale(npct_length[long_pct]),radii.core[1],pScale(long_pct),pScale(long_pct),'asm-longest_pie asm-highlight');
   }
   
   // add gridlines at powers of 10
@@ -310,25 +338,19 @@ Assembly.prototype.drawPlot = function(parent){
   if (!this.contigs){
   var scgg = scg.append('g')
       .attr("id","asm-g-scaffold_count_gridlines");
-  this.seq.forEach(function(i,index){
-  	if (i <= 1000){
-  		if (npct_count[i] < Math.pow(10,power)){
-			plot_arc(scgg,radii.core[1] - cScale(Math.pow(10,power)),radii.core[1] - cScale(Math.pow(10,power)),pScale(i/10),pScale(100),'asm-count_axis');
-			power--;
-		}
-  	  }
+  [1,2,3,4,5,6,7].forEach(function(i,index){
+  	scgg.append('circle')
+  	    .attr('class','asm-count_axis')
+  	    .attr('r',(radii.core[1] - cScale(Math.pow(10,i))))
   });
   }
   else {
   var ctcgg = scg.append('g')
       .attr("id","asm-g-contig_count_gridlines");
-  this.seq.forEach(function(i,index){
-  	if (i <= 1000){
-  		if (nctg_count[i] < Math.pow(10,power)){
-			plot_arc(ctcgg,radii.core[1] - cScale(Math.pow(10,power)),radii.core[1] - cScale(Math.pow(10,power)),pScale(i/10),pScale(100),'asm-count_axis');
-			power--;
-		}
-  	  }
+  [1,2,3,4,5,6,7].forEach(function(i,index){
+  	ctcgg.append('circle')
+  	    .attr('class','asm-count_axis')
+  	    .attr('r',(radii.core[1] - cScale(Math.pow(10,i))))
   });
   }
   
