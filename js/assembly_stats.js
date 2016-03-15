@@ -81,6 +81,7 @@ function Assembly( stats,scaffolds,contigs ) {
 
   this.scale = {};
   this.setScale('percent','linear',[0,100],[180* (Math.PI/180),90* (Math.PI/180)]);
+  this.setScale('100percent','linear',[0,100],[0,2 * Math.PI]);
   this.setScale('gc','linear',[0,100],[0,100]); // range will be updated when drawing
   this.setScale('count','log',[1,1e6],[100,1]); // range will be updated when drawing
   this.setScale('length','sqrt',[1,1e6],[1,100]); // range will be updated range when drawing
@@ -92,7 +93,7 @@ Assembly.prototype.setScale = function(element,scaling,domain,range){
   this.scale[element].range(range);
 }
 
-Assembly.prototype.drawPlot = function(parent,longest,span){
+Assembly.prototype.drawPlot = function(parent,longest,circle_span){
 
   // setup plot dimensions
   var size = 600;
@@ -125,16 +126,20 @@ Assembly.prototype.drawPlot = function(parent,longest,span){
 
   // adjust scales for plot dimensions/data
   if (!longest) longest = this.scaffolds[0]
-  longest = 11000000;
+  if (longest < this.scaffolds[0]) longest = this.scaffolds[0]
+  if (!circle_span) circle_span = this.assembly
+  if (circle_span < this.assembly) circle_span = this.assembly
+  var span_ratio = this.assembly / circle_span * 100;
   this.scale['length'].domain([1,longest])
   this.scale['length'].range([radii.core[0],radii.core[1]])
   this.scale['count'].range([radii.core[1],radii.core[0]+radii.core[1]/3])
-  this.scale['percent'].range([0,(2 * Math.PI)])
+  this.scale['percent'].range([0,(2 * Math.PI * this.assembly / circle_span)])
   this.scale['gc'].range([radii.percent[1],radii.percent[0]])
 
   var lScale = this.scale['length'];
   var cScale = this.scale['count'];
   var pScale = this.scale['percent'];
+  var p100Scale = this.scale['100percent'];
   var gScale = this.scale['gc'];
   var npct_length = this.npct_length;
   var npct_count = this.npct_count;
@@ -161,25 +166,32 @@ Assembly.prototype.drawPlot = function(parent,longest,span){
   var n = 100 - this.ATGC;
   var gc_start = n / 100 * this.GC;
   if (this.GCs && this.Ns){
-  	plot_arc(bcdg,radii.percent[0],radii.percent[1],pScale(0),pScale(100),'asm-ns');
+    plot_arc(bcdg,radii.percent[0],radii.percent[1],pScale(0),pScale(100),'asm-ns');
   	var lower = [];
     var upper = [];
     var GCs = this.GCs;
     var Ns = this.Ns;
-    Ns.forEach(function(n,i){
-      lower.push((n / 100 * GCs[i]));
-      upper.push((100 - n + lower[i]));
+    Ns.forEach(function(current,i){
+      lower.push((current / 100 * GCs[i]));
+      upper.push((100 - current + lower[i]));
     });
-  	var line = d3.svg.line()
-    .x(function(d,i) { return Math.cos(pScale(i/10-25))*(gScale(d)); })
-    .y(function(d,i) { return Math.sin(pScale(i/10-25))*(gScale(d)); });
+    var line = d3.svg.line()
+    .x(function(d,i) { return Math.cos(pScale(i/10)-Math.PI/2)*(gScale(d)); })
+    .y(function(d,i) { return Math.sin(pScale(i/10)-Math.PI/2)*(gScale(d)); });
 
-  var atgc = line(lower)+' '+line(upper)
+    var line = d3.svg.line()
+      .x(function(d,i) { return Math.cos(pScale(i/10)-Math.PI/2)*(gScale(d)); })
+      .y(function(d,i) { return Math.sin(pScale(i/10)-Math.PI/2)*(gScale(d)); });
+    var revline = d3.svg.line()
+      .x(function(d,i) { return Math.cos(pScale((1000-i)/10)-Math.PI/2)*(gScale(d)); })
+      .y(function(d,i) { return Math.sin(pScale((1000-i)/10)-Math.PI/2)*(gScale(d)); });
+    var atgc = line([0])+'L'+line(lower).replace(/M[^L]+?/,'')+revline(upper).replace('M','L')
+
   bcdg.append("path")
   	  .attr("class", "asm-atgc")
       .attr("d", atgc)
       .attr("fill-rule","evenodd");
-  var gc = line(lower)+' '+line(GCs)
+  var gc = line([0])+'L'+line(lower).replace(/M[^L]+?/,'')+revline(GCs).replace('M','L')
   bcdg.append("path")
   	  .attr("class", "asm-gc")
       .attr("d", gc)
@@ -203,18 +215,18 @@ Assembly.prototype.drawPlot = function(parent,longest,span){
       .attr("id","asm-cegma_completeness");
   	var ccdg = ccg.append('g')
        .attr("id","asm-cegma_completeness_data");
-  	 plot_arc(ccdg,radii.ceg[0],radii.ceg[1],pScale(0),pScale(this.cegma_complete),'asm-ceg_comp');
-     plot_arc(ccdg,radii.ceg[1],radii.ceg[2],pScale(0),pScale(this.cegma_partial),'asm-ceg_part');
+  	 plot_arc(ccdg,radii.ceg[0],radii.ceg[1],p100Scale(0),p100Scale(this.cegma_complete),'asm-ceg_comp');
+     plot_arc(ccdg,radii.ceg[1],radii.ceg[2],p100Scale(0),p100Scale(this.cegma_partial),'asm-ceg_part');
      var ccag = ccg.append('g')
        .attr("id","asm-cegma_completeness_axis");
      ccag.append('circle').attr('r',radii.ceg[1]).attr('class','asm-ceg_line');
      ccag.append('line').attr('y2',-radii.ceg[2]).attr('class','asm-axis');
-  	 cegma_axis(ccag,radii,pScale);
+  	 cegma_axis(ccag,radii,p100Scale);
   }
 
   var line = d3.svg.line()
-    .x(function(d,i) { return Math.cos(pScale(i/10-25))*(radii.core[1] - cScale(d)); })
-    .y(function(d,i) { return Math.sin(pScale(i/10-25))*(radii.core[1] - cScale(d)); });
+    .x(function(d,i) { return Math.cos(pScale(i/10)-Math.PI/2)*(radii.core[1] - cScale(d)); })
+    .y(function(d,i) { return Math.sin(pScale(i/10)-Math.PI/2)*(radii.core[1] - cScale(d)); });
 
   	//plot contig count data if available
   	if(this.contigs){
@@ -251,17 +263,20 @@ Assembly.prototype.drawPlot = function(parent,longest,span){
       .attr("id","asm-g-scaffold_length_data");
 
   var line = d3.svg.line()
-    .x(function(d,i) { return Math.cos(pScale(i/10-25))*(radii.core[1] - lScale(d)); })
-    .y(function(d,i) { return Math.sin(pScale(i/10-25))*(radii.core[1] - lScale(d)); });
+    .x(function(d,i) { return Math.cos(pScale(i/10)-Math.PI/2)*(radii.core[1] - lScale(d)); })
+    .y(function(d,i) { return Math.sin(pScale(i/10)-Math.PI/2)*(radii.core[1] - lScale(d)); });
+  var revline = d3.svg.line()
+    .x(function(d,i) { return Math.cos(pScale((1000-i)/10)-Math.PI/2)*(radii.core[1] - lScale(d)); })
+    .y(function(d,i) { return Math.sin(pScale((1000-i)/10)-Math.PI/2)*(radii.core[1] - lScale(d)); });
   var scaf_lengths = $.map(this.npct_length, function(value, index) {
       return [value];
     });
   var zeros = Array.apply(0, Array(1000)).map(function (x, y) { return 0; });
-  var hollow = line(zeros)+' '+line(scaf_lengths)
+  var hollow = line([0])+'L'+line(scaf_lengths).replace(/M[^L]+?/,'')+revline(zeros).replace('M','L')
   sldg.append("path")
   	  .attr("class", "asm-pie")
       .attr("d", hollow)
-      .attr("fill-rule","evenodd");
+      .attr("fill-rule","oddeven");
 
 
   // plot contig lengths if available
@@ -273,7 +288,7 @@ Assembly.prototype.drawPlot = function(parent,longest,span){
   var ctg_lengths = $.map(this.nctg_length, function(value, index) {
       return [value];
     });
-  var hollow = line(zeros)+' '+line(ctg_lengths)
+  var hollow = line([0])+'L'+line(ctg_lengths).replace(/M[^L]+?/,'')+revline(zeros).replace('M','L')
   sldg.append("path")
   	  .attr("class", "asm-contig")
       .attr("d", hollow)
@@ -284,13 +299,13 @@ Assembly.prototype.drawPlot = function(parent,longest,span){
       .attr("id","asm-g-scaffold_length_highlight");
   var long_pct = scaffolds[0] / this.assembly * 100;
   if (long_pct >= 0.1){
-    plot_arc(slhg,radii.core[1] - lScale(npct_length[1]),radii.core[1],0,pScale(long_pct),'asm-longest_pie');
+    plot_arc(slhg,radii.core[1] - lScale(scaffolds[0]),radii.core[1],0,pScale(long_pct),'asm-longest_pie');
   }
   plot_arc(slhg,radii.core[1] - lScale(npct_length[500]),radii.core[1],0,pScale(50),'asm-n50_pie');
   plot_arc(slhg,radii.core[1] - lScale(npct_length[900]),radii.core[1],0,pScale(90),'asm-n90_pie');
   plot_arc(slhg,radii.core[1] - lScale(npct_length[500]),radii.core[1],pScale(50),pScale(50),'asm-n50_pie asm-highlight');
   if (long_pct >= 0.1){
-    plot_arc(slhg,radii.core[1] - lScale(npct_length[1]),radii.core[1],pScale(long_pct),pScale(long_pct),'asm-longest_pie asm-highlight');
+    plot_arc(slhg,radii.core[1] - lScale(scaffolds[0]),radii.core[1],pScale(long_pct),pScale(long_pct),'asm-longest_pie asm-highlight');
   }
 
   // add gridlines at powers of 10
@@ -363,7 +378,7 @@ Assembly.prototype.drawPlot = function(parent,longest,span){
   		.attr('y2',0)
 
 	// draw circumferential axis
-	circumference_axis(mag,radii);
+	circumference_axis(mag,radii,pScale);
 
    // draw legends
    var lg = g.append('g')
@@ -535,37 +550,42 @@ Assembly.prototype.drawPlot = function(parent,longest,span){
     });
 }
 
-function circumference_axis (parent,radii){
+function circumference_axis (parent,radii,scale){
 	var g = parent.append('g');
-	g.append('circle')
-		.attr('r',radii.core[1])
-		.attr('class','asm-axis');
-	var seq = Array.apply(0, Array(50)).map(function (x, y) { return y * 7.2 * (Math.PI/180); });
+  var axis = d3.svg.arc()
+      	.innerRadius(radii.core[1])
+        .outerRadius(radii.core[1])
+        .startAngle(scale(0) )
+        .endAngle(scale(100));
+      g.append('path')
+        .attr('d', axis)
+        .attr('class', 'asm-axis');
+	var seq = Array.apply(0, Array(50)).map(function (x, y) { return y * 2; });
   	seq.forEach(function(i,index){
   		var tick = d3.svg.arc()
       	.innerRadius(radii.core.minorTick[0])
         .outerRadius(radii.core.minorTick[1])
-        .startAngle(i)
-        .endAngle(i);
+        .startAngle(scale(i))
+        .endAngle(scale(i));
 		g.append('path')
         .attr('d', tick)
         .attr('class', 'asm-minorTick');
   	});
-  	var seq = Array.apply(0, Array(10)).map(function (x, y) { return y * 36 * (Math.PI/180); });
+  	var seq = Array.apply(0, Array(11)).map(function (x, y) { return y * 10; });
   	seq.forEach(function(i,index){
   		var tick = d3.svg.arc()
       	.innerRadius(radii.core.majorTick[0])
         .outerRadius(radii.core.majorTick[1])
-        .startAngle(i)
-        .endAngle(i);
+        .startAngle(scale(i))
+        .endAngle(scale(i));
 		g.append('path')
         .attr('d', tick)
         .attr('class', 'asm-majorTick');
-        var x = Math.cos(i-Math.PI/2)*(radii.core.majorTick[1]+10);
-        var y = Math.sin(i-Math.PI/2)*(radii.core.majorTick[1]+10);
+        var x = Math.cos(scale(i)-Math.PI/2)*(radii.core.majorTick[1]+10);
+        var y = Math.sin(scale(i)-Math.PI/2)*(radii.core.majorTick[1]+10);
         g.append('text')
-        .text(function(){return index > 0 ? index*10 : '0%'})
-        .attr('transform', 'translate('+x+','+y+') rotate('+i/(Math.PI/180)+')');
+        .text(function(){return index > 0 ? (index == 10 && scale(100) < 1.96 * Math.PI) ? '100%' : index < 10 ? index*10 : '' : '0%'})
+        .attr('transform', 'translate('+x+','+y+') rotate('+scale(i)/(Math.PI/180)+')');
   	});
 }
 
