@@ -125,8 +125,8 @@ Assembly.prototype.drawPlot = function(parent,longest,circle_span){
   this.radii = radii;
 
   // adjust scales for plot dimensions/data
-  if (!longest) longest = this.scaffolds[0]
-  if (longest < this.scaffolds[0]) longest = this.scaffolds[0]
+  if (!longest) longest = this.scaffolds[0]+1
+  if (longest < this.scaffolds[0]) longest = this.scaffolds[0]+1
   if (!circle_span) circle_span = this.assembly
   if (circle_span < this.assembly) circle_span = this.assembly
   var span_ratio = this.assembly / circle_span * 100;
@@ -311,14 +311,16 @@ Assembly.prototype.drawPlot = function(parent,longest,circle_span){
   // add gridlines at powers of 10
   var length_seq = [];
   var power = 2;
-  while (Math.pow(10,power) <= this.scaffolds[0]){
+  while (Math.pow(10,power) <= longest){
   	length_seq.push(power)
   	power++;
   }
   var slgg = slg.append('g')
       .attr("id","asm-g-scaffold_length_gridlines");
   length_seq.forEach(function(i,index){
-  if(Math.pow(10,i+4) > scaffolds[0] && Math.pow(10,i+1) > npct_length[900] && Math.pow(10,i) < npct_length[100]){
+    //if(Math.pow(10,i+4) > longest && Math.pow(10,i+1) > npct_length[1000]){
+  if(Math.pow(10,i+4) >= longest && Math.pow(10,i+1) > npct_length[900] && Math.pow(10,i) < npct_length[100]){
+    //plot_arc(slgg,radii.core[1]-lScale(Math.pow(10,i)),radii.core[1]-lScale(Math.pow(10,i)),pScale(0),pScale(100),'asm-length_axis asm-dashed');
      slgg.append('circle')
   		.attr('r',radii.core[1]-lScale(Math.pow(10,i)))
   		.attr('cx',0)
@@ -356,7 +358,7 @@ Assembly.prototype.drawPlot = function(parent,longest,circle_span){
       .attr("id","asm-g-scaffold_length_axis");
 
   length_seq.forEach(function(i,index){
-        if(Math.pow(10,i+3) > scaffolds[0] && Math.pow(10,i+1) > npct_length[1000]){
+        if(Math.pow(10,i+3) > longest && Math.pow(10,i+1) > npct_length[1000]){
   slag.append('text')
   		.attr('transform','translate('+(Math.pow(1.5,i)+2)+','+(-radii.core[1]+lScale(Math.pow(10,i))+4)+')')
   		.text(getReadableSeqSizeString(Math.pow(10,i),0))
@@ -466,7 +468,6 @@ Assembly.prototype.drawPlot = function(parent,longest,circle_span){
   	$('.asm-toggle').on('click',function(){
   		var button = this;
   		var classNames = $(this).attr("class").toString().split(' ');
-  		console.log($(button).css('fill'));
   		if ($(button).css('fill') != "rgb(255, 255, 255)" && $(button).css('fill') != "#ffffff"){
   		  $(button).css({fill: "rgb(255, 255, 255)" });
   		  $.each(classNames, function (i, className) {
@@ -520,9 +521,9 @@ Assembly.prototype.drawPlot = function(parent,longest,circle_span){
 
    		var point = d3.mouse(this);
    		var angle =  (50.5 + 50 / Math.PI * Math.atan2(-point[0],  point[1])).toFixed(0);
+      angle = Math.floor(angle * p100Scale(100) / pScale(100) + 0.1)
 
-
-
+if (angle <= 100){
 	var arc = d3.svg.arc()
       	.innerRadius(radii.core[1])
         .outerRadius(radii.core[0])
@@ -541,13 +542,20 @@ Assembly.prototype.drawPlot = function(parent,longest,circle_span){
   		if (nctg_length){
   			output_text.append('text').attr('y',w*3+18).text(nctg_count[(angle*10)].toLocaleString() + ' contigs').attr('class','asm-key');
   			output_text.append('text').attr('x',120).attr('y',w*4.2+18).text('>= ' + getReadableSeqSizeString(nctg_length[(angle*10)])).attr('class','asm-key asm-right');
+      }
   		}
+      else {
+        output_rect.classed('hidden',true);
+  	    output_text.classed('hidden',true);
+  	    path.classed('hidden',true);
+      }
   	});
 	stat_circle.on('mouseout', function () {
 	    output_rect.classed('hidden',true);
 	    output_text.classed('hidden',true);
 	    path.classed('hidden',true);
     });
+
 }
 
 function circumference_axis (parent,radii,scale){
