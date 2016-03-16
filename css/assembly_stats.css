@@ -1,4 +1,4 @@
-  rect {-webkit-box-sizing: border-box; -moz-box-sizing: border-box; box-sizing: border-box; }
+  rect {-webkit-box-sizing: border-box; -moz-box-sizing: border-box; box-sizing: border-box; cursor:pointer; }
   .hidden { visibility:hidden; }
   .asm-ns { stroke:#dddddd; stroke-width:0px; fill:#dddddd;  }
   .asm-genome { stroke:rgb(177,89,40); stroke-width:0px; fill:rgb(255,255,255); visibility:hidden; }
@@ -28,9 +28,11 @@
   .asm-pie { stroke:#bbbbbb; stroke-width:2px; fill:#bbbbbb; }
   .asm-majorTick { stroke:#555555; stroke-width:2px; fill:none; }
   .asm-minorTick { stroke:#555555; fill:none; }
-  .asm-axis { stroke:#555555; stroke-width:2px; fill:none; }  
+  .asm-axis { stroke:#555555; stroke-width:2px; fill:none; }
+  .asm-narrow { stroke:#999999; stroke-width:1px; }
   .asm-live_stats { fill:white; }
-  text { dominant-baseline:middle; text-anchor:middle; font-size:8pt; font-family:sans-serif; fill:#555555; }
+  .asm-scale_rect { fill:#eeeeee; stroke:#999999; stroke-width:1px; }
+  text { dominant-baseline:middle; text-anchor:middle; font-size:8pt; font-family:sans-serif; fill:#555555; pointer-events:none; }
   text.asm-count_label { dominant-baseline:middle; text-anchor:end; fill:white; visibility:hidden; }
   text.asm-length_label { dominant-baseline:middle; text-anchor:start; stroke:none; fill:#555555; }
   text.asm-assembly_label { dominant-baseline:middle; text-anchor:start; fill:white; visibility:hidden; }
