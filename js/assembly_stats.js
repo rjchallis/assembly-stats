@@ -101,8 +101,8 @@ Assembly.prototype.drawPlot = function(parent_div,longest,circle_span){
   var tick = 10;
   var w = 12; // coloured box size for legend
 
-  var svg = d3.select('#'+parent_div)
-        .append('svg');
+  var parent = d3.select('#'+parent_div);
+  var svg = parent.append('svg');
 
 
   svg.attr('width', '100%')
@@ -467,7 +467,6 @@ Assembly.prototype.drawPlot = function(parent_div,longest,circle_span){
   	key.append('text').attr('x',w+3).attr('y',w*2.5-1).text('Contig length').attr('class','asm-key');
   	}
 
-    // TODO
     // add adjustable scale legend
     var lscl = lg.append('g')
        .attr("id","asm-g-scale_legend");
@@ -481,17 +480,56 @@ Assembly.prototype.drawPlot = function(parent_div,longest,circle_span){
    	var circ_scale_rect = circ_key.append('rect').attr('x',w+5).attr('y',-3).attr('width','80px').attr('height','18px').attr('class','asm-scale_rect');
    	circ_key.append('circle').attr('cx',w/2).attr('cy',w/2).attr('r',w/2).attr('class','asm-axis');
    	circ_key.append('line').attr('x1',w/2).attr('y1',0).attr('x2',w/2).attr('y2',w/2).attr('class','asm-axis asm-narrow');
-   	circ_key.append('text').attr('x',w+8).attr('y',w-1).text(getReadableSeqSizeString(circle_span,1)).attr('class','asm-key')
+    var readable_circle_span = getReadableSeqSizeString(circle_span,1)
+   	circ_key.append('text').attr('x',w+8).attr('y',w-1).text(readable_circle_span).attr('class','asm-key')
    	var rad_key = key.append('g').attr('width','100px').attr('height','14px').attr('transform', 'translate(0,'+(w*2.5)+')').attr('id','asm-rad_scale_g');
    	var rad_scale_rect = rad_key.append('rect').attr('x',w+5).attr('y',-3).attr('width','80px').attr('height','18px').attr('class','asm-scale_rect');
    	rad_key.append('circle').attr('cx',w/2).attr('cy',w/2).attr('r',w/2).attr('class','asm-axis asm-narrow');
    	rad_key.append('line').attr('x1',w/2).attr('y1',0).attr('x2',w/2).attr('y2',w/2).attr('class','asm-axis');
-   	rad_key.append('text').attr('x',w+8).attr('y',w-1).text(getReadableSeqSizeString(longest,1)).attr('class','asm-key');
+    var readable_longest = getReadableSeqSizeString(longest,1);
+   	rad_key.append('text').attr('x',w+8).attr('y',w-1).text(readable_longest).attr('class','asm-key');
 
-    // TODO allow setting scale on click
+    // setup form
+    var form_div_wrapper = parent.append('div').attr('id','asm-scale_form_wrapper').attr('class','hidden');
+    var form_div_bg = form_div_wrapper.append('div').attr('id','asm-scale_form_bg');
+    var form_div = form_div_bg.append('div').attr('id','asm-scale_form_div')
+    var form = form_div.append('form').attr('id','asm-scale_form')
+    form.append('label').attr('for','asm-circ_scale_input').text('circumference scale:').attr('class','asm-form_label')
+    form.append('input').attr('type','text').property('value',readable_circle_span).attr('placeholder',readable_circle_span).attr('id','asm-circ_scale_input').attr('class','asm-form_element')
+    form.append('br')
+    form.append('label').attr('for','asm-rad_scale_input').text('radial scale:').attr('class','asm-form_label')
+    form.append('input').attr('type','text').property('value',readable_longest).attr('placeholder',readable_longest).attr('id','asm-rad_scale_input').attr('class','asm-form_element')
+    form.append('br')
+    form.append('input').attr('type','submit').attr('class','asm-form_element')
+  var asm = this;
+  $('#asm-scale_form').submit(function(e){
+    e.preventDefault();
+    var circ_val = toInt($('#asm-circ_scale_input').val());
+    var rad_val = toInt($('#asm-rad_scale_input').val());
+    asm.reDrawPlot(parent,rad_val,circ_val);
+  })
 
+  // hide form
+  form_div_wrapper.on('click',function(){
+    form_div_wrapper.classed('hidden',true)
+  });
+  form_div.on('click',function(){
+    d3.event.stopPropagation();
+  });
 
+  // toggle form visibility
+  d3.selectAll('.asm-scale_rect').on('click',function(){
+    form_div_wrapper.classed('hidden',!form_div_wrapper.classed('hidden'))
+    var rect = svg.node().getBoundingClientRect();
+    form_div_wrapper.style('left',rect.left)
+    form_div_wrapper.style('top',rect.top)
+    form_div_wrapper.style('height',rect.height)
+    form_div_wrapper.style('width',rect.width)
 
+    form_div_bg.style('height',rect.height > rect.width ? rect.width : rect.height )
+    form_div_bg.style('width',rect.height > rect.width ? rect.width : rect.height )
+
+  });
 
   	// toggle plot features
   	$('.asm-toggle').on('click',function(){
@@ -585,6 +623,11 @@ if (angle <= 100){
 	    path.classed('hidden',true);
     });
 
+}
+
+Assembly.prototype.reDrawPlot = function(parent,longest,circle_span){
+  parent.html('');
+  this.drawPlot(parent.attr('id'),longest,circle_span);
 }
 
 function circumference_axis (parent,radii,scale){
@@ -724,4 +767,22 @@ function plot_rect (parent,x1,y1,width,height,css){
 	    .attr('width', width)
 	    .attr('height', height)
         .attr('class', css);
+}
+
+function toInt(number){
+  number = number.replace(/[,\s]+/g,'')
+  var suffix = number.slice(-2)
+  if (suffix.match(/\w[bB]/)){
+    number = number.replace(suffix,'')
+    suffix = suffix.toLowerCase()
+    var convert = { 'kb':1000,
+                    'mb':1000000,
+                    'gb':1000000000,
+                    'tb':1000000000000 };
+    if (isNaN(parseFloat(number)) || !isFinite(number)){
+      return 0;
+    }
+    number = number * convert[suffix];
+  }
+  return number
 }

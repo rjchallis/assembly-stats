@@ -43,3 +43,8 @@
   text.asm-tr_title { dominant-baseline:middle; text-anchor:start; fill:black; font-size:12pt; }
   .asm-key { dominant-baseline:auto; text-anchor:start; fill:#555555; font-size:10pt; }
   .asm-right { text-anchor:end; }
+  #asm-scale_form_wrapper { position:absolute; text-align:center; font-size:10pt; font-family:sans-serif; fill:#555555; }
+  #asm-scale_form_bg { position:relative; display:inline-block; background-color:rgba(0,0,0,0.5); }
+  #asm-scale_form_div { padding-top:50px; width:200px; height:150px; position:absolute; left:50%; top:50%; margin:-100px 0 0 -100px; background-color:white; border-radius:100px; }
+  .asm-form_label:after { content:" "; display:block; clear:both; }
+  .asm-form_element { margin-bottom:1em; }
