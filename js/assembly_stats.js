@@ -93,7 +93,7 @@ Assembly.prototype.setScale = function(element,scaling,domain,range){
   this.scale[element].range(range);
 }
 
-Assembly.prototype.drawPlot = function(parent,longest,circle_span){
+Assembly.prototype.drawPlot = function(parent_div,longest,circle_span){
 
   // setup plot dimensions
   var size = 600;
@@ -101,7 +101,11 @@ Assembly.prototype.drawPlot = function(parent,longest,circle_span){
   var tick = 10;
   var w = 12; // coloured box size for legend
 
-  parent.attr('width', '100%')
+  var svg = d3.select('#'+parent_div)
+        .append('svg');
+
+
+  svg.attr('width', '100%')
   		.attr('height', '100%')
   		.attr('viewBox','0 0 '+size+' '+size)
   		.attr('preserveAspectRatio','xMidYMid meet')
@@ -151,7 +155,7 @@ Assembly.prototype.drawPlot = function(parent,longest,circle_span){
   var contigs = this.contigs;
 
   // create a group for the plot
-  var g = parent.append('g')
+  var g = svg.append('g')
       .attr("transform","translate("+size/2+","+size/2+")")
       .attr("id","asm-g-plot");
 
@@ -485,6 +489,9 @@ Assembly.prototype.drawPlot = function(parent,longest,circle_span){
    	rad_key.append('text').attr('x',w+8).attr('y',w-1).text(getReadableSeqSizeString(longest,1)).attr('class','asm-key');
 
     // TODO allow setting scale on click
+
+
+
 
   	// toggle plot features
   	$('.asm-toggle').on('click',function(){
