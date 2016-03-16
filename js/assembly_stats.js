@@ -530,10 +530,10 @@ Assembly.prototype.drawPlot = function(parent_div, longest, circle_span) {
   form.append('br')
   form.append('input').attr('type', 'submit').attr('class', 'asm-form_element')
   var asm = this;
-  $('#asm-scale_form').submit(function(e) {
+  $('#'+parent_div+' #asm-scale_form').submit(function(e) {
     e.preventDefault();
-    var circ_val = toInt($('#asm-circ_scale_input').val());
-    var rad_val = toInt($('#asm-rad_scale_input').val());
+    var circ_val = toInt($('#'+parent_div+' #asm-circ_scale_input').val());
+    var rad_val = toInt($('#'+parent_div+' #asm-rad_scale_input').val());
     asm.reDrawPlot(parent, rad_val, circ_val);
   })
 
@@ -546,7 +546,7 @@ Assembly.prototype.drawPlot = function(parent_div, longest, circle_span) {
   });
 
   // toggle form visibility
-  d3.selectAll('.asm-scale_rect').on('click', function() {
+  d3.selectAll('#'+parent_div+' .asm-scale_rect').on('click', function() {
     form_div_wrapper.classed('hidden', !form_div_wrapper.classed('hidden'))
     var rect = svg.node().getBoundingClientRect();
     form_div_wrapper.style('left', rect.left)
@@ -560,7 +560,7 @@ Assembly.prototype.drawPlot = function(parent_div, longest, circle_span) {
   });
 
   // toggle plot features
-  $('.asm-toggle').on('click', function() {
+  $('#'+parent_div+' .asm-toggle').on('click', function() {
     var button = this;
     var classNames = $(this).attr("class").toString().split(' ');
     if ($(button).css('fill') != "rgb(255, 255, 255)" && $(button).css('fill') != "#ffffff") {
