@@ -11,16 +11,10 @@ function getReadableSeqSizeString(seqSizeInBases, fixed) {
 };
 
 function Assembly(stats, scaffolds, contigs) {
-  stats.scaffolds = scaffolds ? scaffolds : stats.scaffolds;
-  stats.contigs = contigs ? contigs : stats.contigs;
-  var sum = stats.scaffolds.reduce(function(previousValue, currentValue, index, array) {
-    return previousValue + currentValue;
-  });
-  if (stats.contigs) {
-    var ctgsum = stats.contigs.reduce(function(previousValue, currentValue, index, array) {
-      return previousValue + currentValue;
-    });
-  }
+  this.scaffolds = scaffolds ? scaffolds : stats.scaffolds;
+  this.contigs = contigs ? contigs : stats.contigs;
+  this.scaffold_count = stats.scaffold_count ? stats.scaffold_count : stats.scaffolds.length;
+  this.contig_count = stats.contig_count ? stats.contig_count : stats.contigs.length;
   this.genome = stats.genome;
   this.assembly = stats.assembly;
   this.N = stats.N ? stats.N <= 100 ? stats.N < 1 ? stats.N * 100 : stats.N : stats.N / this.assembly * 100 : 0;
@@ -34,56 +28,70 @@ function Assembly(stats, scaffolds, contigs) {
   });
   var npct_length = {};
   var npct_count = {};
-  this.GCs = stats.GCs;
-  this.Ns = stats.Ns;
+  this.GCs = stats.GCs ? stats.GCs : stats.binned_GCs;
+  this.Ns = stats.Ns ? stats.Ns : stats.binned_Ns;
 
-  function getRandomArbitrary(min, max) {
-    return Math.random() * (max - min) + min;
-  }
-  var lsum = 0;
-  this.scaffolds.forEach(function(length, index, array) {
-    var new_sum = lsum + length;
-    if (Math.floor(new_sum / sum * 1000) > Math.floor(lsum / sum * 100)) {
-      npct_length[Math.floor(new_sum / sum * 1000)] = length;
-      npct_count[Math.floor(new_sum / sum * 1000)] = index + 1;
+  if (stats.binned_scaffold_lengths){
+    this.npct_length = stats.binned_scaffold_lengths;
+    this.npct_count = stats.binned_scaffold_counts;
+    if (stats.binned_contig_lengths){
+      this.nctg_length = stats.binned_contig_lengths;
+      this.nctg_count = stats.binned_contig_counts;
     }
-    lsum = new_sum;
-  });
-  this.seq = Array.apply(0, Array(1000)).map(function(x, y) {
-    return 1000 - y;
-  });
-  this.seq.forEach(function(i, index) {
-    if (!npct_length[i]) npct_length[i] = npct_length[(i + 1)];
-    if (!npct_count[i]) npct_count[i] = npct_count[(i + 1)];
-  });
-  this.npct_length = npct_length;
-  this.npct_count = npct_count;
-
-  var nctg_length = {};
-  var nctg_count = {};
-
-  if (stats.contigs) {
-    this.contigs = stats.contigs.sort(function(a, b) {
-      return b - a
+  }
+  else {
+    var sum = stats.scaffolds.reduce(function(previousValue, currentValue, index, array) {
+      return previousValue + currentValue;
     });
-
+    if (stats.contigs) {
+      var ctgsum = stats.contigs.reduce(function(previousValue, currentValue, index, array) {
+        return previousValue + currentValue;
+      });
+    }
     var lsum = 0;
-    this.contigs.forEach(function(length, index, array) {
+    this.scaffolds.forEach(function(length, index, array) {
       var new_sum = lsum + length;
-      if (Math.floor(new_sum / ctgsum * 1000) > Math.floor(lsum / ctgsum * 100)) {
-        nctg_length[Math.floor(new_sum / ctgsum * 1000)] = length;
-        nctg_count[Math.floor(new_sum / ctgsum * 1000)] = index + 1;
+      if (Math.floor(new_sum / sum * 1000) > Math.floor(lsum / sum * 100)) {
+        npct_length[Math.floor(new_sum / sum * 1000)] = length;
+        npct_count[Math.floor(new_sum / sum * 1000)] = index + 1;
       }
       lsum = new_sum;
     });
-    this.seq.forEach(function(i, index) {
-      if (!nctg_length[i]) nctg_length[i] = nctg_length[(i + 1)];
-      if (!nctg_count[i]) nctg_count[i] = nctg_count[(i + 1)];
+    this.seq = Array.apply(0, Array(1000)).map(function(x, y) {
+      return 1000 - y;
     });
-    this.nctg_length = nctg_length;
-    this.nctg_count = nctg_count;
-  }
+    this.seq.forEach(function(i, index) {
+      if (!npct_length[i]) npct_length[i] = npct_length[(i + 1)];
+      if (!npct_count[i]) npct_count[i] = npct_count[(i + 1)];
+    });
+    this.npct_length = npct_length;
+    this.npct_count = npct_count;
 
+    var nctg_length = {};
+    var nctg_count = {};
+
+    if (stats.contigs) {
+      this.contigs = stats.contigs.sort(function(a, b) {
+        return b - a
+      });
+
+      var lsum = 0;
+      this.contigs.forEach(function(length, index, array) {
+        var new_sum = lsum + length;
+        if (Math.floor(new_sum / ctgsum * 1000) > Math.floor(lsum / ctgsum * 100)) {
+          nctg_length[Math.floor(new_sum / ctgsum * 1000)] = length;
+          nctg_count[Math.floor(new_sum / ctgsum * 1000)] = index + 1;
+        }
+        lsum = new_sum;
+      });
+      this.seq.forEach(function(i, index) {
+        if (!nctg_length[i]) nctg_length[i] = nctg_length[(i + 1)];
+        if (!nctg_count[i]) nctg_count[i] = nctg_count[(i + 1)];
+      });
+      this.nctg_length = nctg_length;
+      this.nctg_count = nctg_count;
+    }
+  }
   this.scale = {};
   this.setScale('percent', 'linear', [0, 100], [180 * (Math.PI / 180), 90 * (Math.PI / 180)]);
   this.setScale('100percent', 'linear', [0, 100], [0, 2 * Math.PI]);
@@ -444,11 +452,11 @@ Assembly.prototype.drawPlot = function(parent_div, longest, circle_span) {
     txt.append('tspan').text('BUSCO (n = ' + this.busco.n.toLocaleString() + ')');
     var key = lccg.append('g').attr('transform', 'translate(' + (size / 2 - 210) + ',' + (-size / 2 + 28) + ')');
     key.append('rect').attr('height', w).attr('width', w).attr('class', 'asm-busco_C asm-toggle');
-    key.append('text').attr('x', w + 3).attr('y', w - 1).text('Comp (' + this.busco.C.toFixed(1) + '%)').attr('class', 'asm-key');
+    key.append('text').attr('x', w + 3).attr('y', w - 1).text('Comp. (' + this.busco.C.toFixed(1) + '%)').attr('class', 'asm-key');
     key.append('rect').attr('y', w * 1.5).attr('height', w).attr('width', w).attr('class', 'asm-busco_D asm-toggle');
-    key.append('text').attr('x', w + 3).attr('y', w * 2.5 - 1).text('Dup (' + this.busco.D.toFixed(1) + '%)').attr('class', 'asm-key');
+    key.append('text').attr('x', w + 3).attr('y', w * 2.5 - 1).text('Dup. (' + this.busco.D.toFixed(1) + '%)').attr('class', 'asm-key');
     key.append('rect').attr('y', w * 3).attr('height', w).attr('width', w).attr('class', 'asm-busco_F asm-toggle');
-    key.append('text').attr('x', w + 3).attr('y', w * 4 - 1).text('Frag (' + this.busco.F.toFixed(1) + '%)').attr('class', 'asm-key');
+    key.append('text').attr('x', w + 3).attr('y', w * 4 - 1).text('Frag. (' + this.busco.F.toFixed(1) + '%)').attr('class', 'asm-key');
   }
   else if (this.cegma_complete) {
     var lccg = lg.append('g')
@@ -495,7 +503,7 @@ Assembly.prototype.drawPlot = function(parent_div, longest, circle_span) {
   var count_txt = key.append('text').attr('x', w + 3).attr('y', w - 1).attr('class', 'asm-key')
   count_txt.append('tspan').text('Log')
   count_txt.append('tspan').attr('baseline-shift', 'sub').attr('font-size', '75%').text(10)
-  count_txt.append('tspan').text(' scaffold count (total ' + this.scaffolds.length.toLocaleString() + ')');
+  count_txt.append('tspan').text(' scaffold count (total ' + this.scaffold_count.toLocaleString() + ')');
   key.append('rect').attr('y', w * 1.5).attr('height', w).attr('width', w).attr('class', 'asm-pie asm-toggle');
   key.append('text').attr('x', w + 3).attr('y', w * 2.5 - 1).text('Scaffold length (total ' + getReadableSeqSizeString(this.assembly, 0) + ')').attr('class', 'asm-key');
 
@@ -521,7 +529,7 @@ Assembly.prototype.drawPlot = function(parent_div, longest, circle_span) {
     var count_txt = key.append('text').attr('x', w + 2).attr('y', w - 1).attr('class', 'asm-key')
     count_txt.append('tspan').text('Log')
     count_txt.append('tspan').attr('baseline-shift', 'sub').attr('font-size', '75%').text(10)
-    count_txt.append('tspan').text(' contig count (total ' + this.contigs.length.toLocaleString() + ')');
+    count_txt.append('tspan').text(' contig count (total ' + this.contig_count.toLocaleString() + ')');
     key.append('rect').attr('y', w * 1.5).attr('height', w).attr('width', w).attr('class', 'asm-contig asm-toggle');
     key.append('text').attr('x', w + 3).attr('y', w * 2.5 - 1).text('Contig length').attr('class', 'asm-key');
   }
@@ -680,11 +688,11 @@ Assembly.prototype.drawPlot = function(parent_div, longest, circle_span) {
       var txt = output_text.append('text')
         .attr('class', 'asm-live_title');
       txt.append('tspan').text('N' + angle);
-      output_text.append('text').attr('y', 18).text(npct_count[(angle * 10)].toLocaleString() + ' scaffolds').attr('class', 'asm-key');
-      output_text.append('text').attr('x', 120).attr('y', w * 1.2 + 18).text('>= ' + getReadableSeqSizeString(npct_length[(angle * 10)])).attr('class', 'asm-key asm-right');
+      output_text.append('text').attr('y', 18).text(npct_count[(angle * 10)-1].toLocaleString() + ' scaffolds').attr('class', 'asm-key');
+      output_text.append('text').attr('x', 120).attr('y', w * 1.2 + 18).text('>= ' + getReadableSeqSizeString(npct_length[(angle * 10)-1])).attr('class', 'asm-key asm-right');
       if (nctg_length) {
-        output_text.append('text').attr('y', w * 3 + 18).text(nctg_count[(angle * 10)].toLocaleString() + ' contigs').attr('class', 'asm-key');
-        output_text.append('text').attr('x', 120).attr('y', w * 4.2 + 18).text('>= ' + getReadableSeqSizeString(nctg_length[(angle * 10)])).attr('class', 'asm-key asm-right');
+        output_text.append('text').attr('y', w * 3 + 18).text(nctg_count[(angle * 10)-1].toLocaleString() + ' contigs').attr('class', 'asm-key');
+        output_text.append('text').attr('x', 120).attr('y', w * 4.2 + 18).text('>= ' + getReadableSeqSizeString(nctg_length[(angle * 10)-1])).attr('class', 'asm-key asm-right');
       }
     } else {
       output_rect.classed('hidden', true);
