@@ -214,7 +214,7 @@ Assembly.prototype.drawPlot = function(parent_div, longest, circle_span) {
       .y(function(d, i) {
         return Math.sin(pScale((1000 - i) / 10) - Math.PI / 2) * (gScale(d));
       });
-    var atgc = line([0]) + 'L' + line(lower).replace(/M[^L]+?/, '') + revline(upper).replace('M', 'L')
+    var atgc = line([0]) + 'L' + line(lower).replace(/M[^L]+?/, '') + revline(upper.reverse()).replace('M', 'L')
 
     bcdg.append("path")
       .attr("class", "asm-atgc")
