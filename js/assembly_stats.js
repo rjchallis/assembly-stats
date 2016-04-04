@@ -569,7 +569,7 @@ Assembly.prototype.drawPlot = function(parent_div, longest, circle_span) {
       });
       $.each(classNames, function(i, className) {
         if (className != 'asm-toggle') {
-          $('.' + className).each(function() {
+          $('#'+parent_div+' .' + className).each(function() {
             if (this != button) {
               $(this).css({
                 visibility: "hidden"
@@ -585,7 +585,7 @@ Assembly.prototype.drawPlot = function(parent_div, longest, circle_span) {
       });
       $.each(classNames, function(i, className) {
         if (className != 'asm-toggle') {
-          $('.' + className).each(function() {
+          $('#'+parent_div+' .' + className).each(function() {
             if (this != button) {
               $(this).css({
                 visibility: "visible"
@@ -594,18 +594,18 @@ Assembly.prototype.drawPlot = function(parent_div, longest, circle_span) {
           });
         }
         if (className == 'asm-count') {
-          $('.asm-contig_count.asm-toggle').css({
+          $('#'+parent_div+' .asm-contig_count.asm-toggle').css({
             fill: "rgb(255, 255, 255)"
           })
-          $('.asm-contig_count.asm-remote').css({
+          $('#'+parent_div+' .asm-contig_count.asm-remote').css({
             visibility: "hidden"
           })
         }
         if (className == 'asm-contig_count') {
-          $('.asm-count.asm-toggle').css({
+          $('#'+parent_div+' .asm-count.asm-toggle').css({
             fill: "rgb(255, 255, 255)"
           })
-          $('.asm-count.asm-remote').css({
+          $('#'+parent_div+' .asm-count.asm-remote').css({
             visibility: "hidden"
           })
         }
@@ -621,6 +621,8 @@ Assembly.prototype.drawPlot = function(parent_div, longest, circle_span) {
   var output = overlay.append('g').attr('transform', 'translate(' + (size / 2 - 142) + ',' + (size / 2 - 128) + ')');
   var output_rect = output.append('rect').attr('class', 'asm-live_stats hidden').attr('height', 110).attr('width', 150);
   var output_text = output.append('g').attr('transform', 'translate(' + (2) + ',' + (18) + ')').attr('class', 'hidden');
+  //var output_gc = output.append('g').attr('transform', 'translate(' + (2) + ',' + (18) + ')').attr('class', 'hidden');
+  //var gc_circle = overoverlay.append('circle').attr('r', radii.percent[0]).attr('fill', 'white').style('opacity', 0);
   var stat_circle = overoverlay.append('circle').attr('r', radii.core[1]).attr('fill', 'white').style('opacity', 0);
   stat_circle.on('mousemove', function() {
     output_rect.classed('hidden', false);
@@ -664,7 +666,73 @@ Assembly.prototype.drawPlot = function(parent_div, longest, circle_span) {
     output_text.classed('hidden', true);
     path.classed('hidden', true);
   });
+  /*
+  if (typeof this.GCs != 'undefined' && this.GCs instanceof Array){
+    var GCs = this.GCs;
+    var Ns = this.Ns;
+      var sgcg = output_gc.append('g')
+        .attr('transform', 'translate(' + (radii.ceg[2] + tick * 1) + ',' + (radii.ceg[2] + tick * 1) + ')')
+        .attr("id", "asm-segment_gc");
+      var sgcdg = sgcg.append('g')
+        .attr("id", "asm-segment_gc_data");
+      var sgcag = sgcg.append('g')
+        .attr("id", "asm-segment_gc_axis");
+      //ccag.append('circle').attr('r', radii.ceg[1]).attr('class', 'asm-ceg_line');
+      //ccag.append('line').attr('y2', -radii.ceg[2]).attr('class', 'asm-axis');
+      cegma_axis(sgcag, radii, p100Scale);
 
+    gc_circle.on('mousemove', function() {
+      output_rect.classed('hidden', false);
+      output_text.classed('hidden', false);
+      output_gc.classed('hidden', false);
+      path.classed('hidden', false);
+      output_text.selectAll('text').remove();
+
+
+      var point = d3.mouse(this);
+      var angle = (50.5 + 50 / Math.PI * Math.atan2(-point[0], point[1])).toFixed(0);
+      angle = Math.floor(angle * p100Scale(100) / pScale(100) + 0.1)
+
+      if (angle <= 100) {
+        var arc = d3.svg.arc()
+          .innerRadius(radii.core[0])
+          .outerRadius(radii.percent[0])
+          .startAngle(pScale(angle - 1))
+          .endAngle(pScale(angle));
+        path
+          .attr('d', arc)
+          .attr('class', 'asm-live_segment');
+
+
+        var txt = output_text.append('text')
+          .attr('class', 'asm-live_title');
+        txt.append('tspan').text('N' + angle);
+
+        // plot segment percentages as pie
+        var seg_n = Ns.slice((angle-1) * 10,angle*10).reduce(function(a, b) { return a + b; }, 0)/10;
+        var seg_gc = GCs.slice((angle-1) * 10,angle*10).reduce(function(a, b) { return a + b; }, 0)/10;
+        var seg_gc_start = seg_n / 100 * seg_gc;
+
+          plot_arc(sgcdg, radii.ceg[1], radii.ceg[2], p100Scale(0), p100Scale(100), 'asm-ns');
+          plot_arc(sgcdg, radii.ceg[1], radii.ceg[2], p100Scale(seg_gc_start), p100Scale(seg_gc_start + (100 - seg_n)), 'asm-atgc');
+          plot_arc(sgcdg, radii.ceg[1], radii.ceg[2], p100Scale(seg_gc_start), p100Scale(seg_gc), 'asm-gc');
+
+
+      } else {
+        output_rect.classed('hidden', true);
+        output_text.classed('hidden', true);
+        output_gc.classed('hidden', true);
+        path.classed('hidden', true);
+      }
+    });
+    gc_circle.on('mouseout', function() {
+      output_rect.classed('hidden', true);
+      output_text.classed('hidden', true);
+      output_gc.classed('hidden', true);
+      path.classed('hidden', true);
+    });
+  }
+  */
 }
 
 Assembly.prototype.reDrawPlot = function(parent, longest, circle_span) {
