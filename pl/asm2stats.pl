@@ -90,7 +90,7 @@ sub bin_seqs {
   }
   $return{assembly} = $span;
   $return{ATGC} = $span - $nsum;
-  $return{GC} = $gcsum / ($span - $nsum) * 100;
+  $return{GC} = int($gcsum / ($span - $nsum) * 10000) / 100;
   $return{N} = $nsum;
   $return{binned_GCs} = \@binned_gcs;
   $return{binned_Ns} = \@binned_ns;
@@ -107,6 +107,6 @@ sub bin_seqs {
 sub split_scaf {
   # break scaffolds into contigs on runs of >= $break Ns
   my ($seq,$break) = @_;
-  my @ctgs = split /N{$break}/i,$seq;
+  my @ctgs = split /N{$break,}/i,$seq;
   return @ctgs;
 }
