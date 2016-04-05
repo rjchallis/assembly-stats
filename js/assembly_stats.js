@@ -1,26 +1,7 @@
-function getReadableSeqSizeString(seqSizeInBases, fixed) {
-  // function based on answer at http://stackoverflow.com/questions/10420352/converting-file-size-in-bytes-to-human-readable
-  var i = -1;
-  var baseUnits = [' kB', ' MB', ' GB', ' TB'];
-  do {
-    seqSizeInBases = seqSizeInBases / 1000;
-    i++;
-  } while (seqSizeInBases >= 1000);
-  fixed = fixed ? fixed : fixed == 0 ? 0 : 1;
-  return Math.max(seqSizeInBases, 0.1).toFixed(fixed) + baseUnits[i];
-};
-
 function Assembly(stats, scaffolds, contigs) {
-  stats.scaffolds = scaffolds ? scaffolds : stats.scaffolds;
-  stats.contigs = contigs ? contigs : stats.contigs;
-  var sum = stats.scaffolds.reduce(function(previousValue, currentValue, index, array) {
-    return previousValue + currentValue;
-  });
-  if (stats.contigs) {
-    var ctgsum = stats.contigs.reduce(function(previousValue, currentValue, index, array) {
-      return previousValue + currentValue;
-    });
-  }
+  this.scaffolds = scaffolds ? scaffolds : stats.scaffolds;
+  this.contigs = contigs ? contigs : stats.contigs;
+  this.scaffold_count = stats.scaffold_count ? stats.scaffold_count : stats.scaffolds.length;
   this.genome = stats.genome;
   this.assembly = stats.assembly;
   this.N = stats.N ? stats.N <= 100 ? stats.N < 1 ? stats.N * 100 : stats.N : stats.N / this.assembly * 100 : 0;
@@ -28,61 +9,78 @@ function Assembly(stats, scaffolds, contigs) {
   this.GC = stats.GC ? stats.GC <= 100 ? stats.GC <= 1 ? stats.GC * 100 : stats.GC : stats.GC / this.assembly * 100 : 0;
   this.cegma_complete = stats.cegma_complete;
   this.cegma_partial = stats.cegma_partial;
+  this.busco = stats.busco;
   this.scaffolds = stats.scaffolds.sort(function(a, b) {
     return b - a
   });
   var npct_length = {};
   var npct_count = {};
-  this.GCs = stats.GCs;
-  this.Ns = stats.Ns;
+  this.GCs = stats.GCs ? stats.GCs : stats.binned_GCs;
+  this.Ns = stats.Ns ? stats.Ns : stats.binned_Ns;
 
-  function getRandomArbitrary(min, max) {
-    return Math.random() * (max - min) + min;
-  }
-  var lsum = 0;
-  this.scaffolds.forEach(function(length, index, array) {
-    var new_sum = lsum + length;
-    if (Math.floor(new_sum / sum * 1000) > Math.floor(lsum / sum * 100)) {
-      npct_length[Math.floor(new_sum / sum * 1000)] = length;
-      npct_count[Math.floor(new_sum / sum * 1000)] = index + 1;
+  if (stats.binned_scaffold_lengths){
+    this.npct_length = stats.binned_scaffold_lengths;
+    this.npct_count = stats.binned_scaffold_counts;
+    if (stats.binned_contig_lengths){
+      this.nctg_length = stats.binned_contig_lengths;
+      this.nctg_count = stats.binned_contig_counts;
+      this.contig_count = stats.contig_count;
     }
-    lsum = new_sum;
-  });
-  this.seq = Array.apply(0, Array(1000)).map(function(x, y) {
-    return 1000 - y;
-  });
-  this.seq.forEach(function(i, index) {
-    if (!npct_length[i]) npct_length[i] = npct_length[(i + 1)];
-    if (!npct_count[i]) npct_count[i] = npct_count[(i + 1)];
-  });
-  this.npct_length = npct_length;
-  this.npct_count = npct_count;
-
-  var nctg_length = {};
-  var nctg_count = {};
-
-  if (stats.contigs) {
-    this.contigs = stats.contigs.sort(function(a, b) {
-      return b - a
+  }
+  else {
+    var sum = stats.scaffolds.reduce(function(previousValue, currentValue, index, array) {
+      return previousValue + currentValue;
     });
-
+    if (stats.contigs) {
+      var ctgsum = stats.contigs.reduce(function(previousValue, currentValue, index, array) {
+        return previousValue + currentValue;
+      });
+    }
     var lsum = 0;
-    this.contigs.forEach(function(length, index, array) {
+    this.scaffolds.forEach(function(length, index, array) {
       var new_sum = lsum + length;
-      if (Math.floor(new_sum / ctgsum * 1000) > Math.floor(lsum / ctgsum * 100)) {
-        nctg_length[Math.floor(new_sum / ctgsum * 1000)] = length;
-        nctg_count[Math.floor(new_sum / ctgsum * 1000)] = index + 1;
+      if (Math.floor(new_sum / sum * 1000) > Math.floor(lsum / sum * 100)) {
+        npct_length[Math.floor(new_sum / sum * 1000)] = length;
+        npct_count[Math.floor(new_sum / sum * 1000)] = index + 1;
       }
       lsum = new_sum;
     });
-    this.seq.forEach(function(i, index) {
-      if (!nctg_length[i]) nctg_length[i] = nctg_length[(i + 1)];
-      if (!nctg_count[i]) nctg_count[i] = nctg_count[(i + 1)];
+    this.seq = Array.apply(0, Array(1000)).map(function(x, y) {
+      return 1000 - y;
     });
-    this.nctg_length = nctg_length;
-    this.nctg_count = nctg_count;
-  }
+    this.seq.forEach(function(i, index) {
+      if (!npct_length[i]) npct_length[i] = npct_length[(i + 1)];
+      if (!npct_count[i]) npct_count[i] = npct_count[(i + 1)];
+    });
+    this.npct_length = $.map(npct_length,function(value,index){return value});
+    this.npct_count = $.map(npct_count,function(value,index){return value});
 
+    var nctg_length = {};
+    var nctg_count = {};
+
+    if (stats.contigs) {
+      this.contigs = stats.contigs.sort(function(a, b) {
+        return b - a
+      });
+
+      var lsum = 0;
+      this.contigs.forEach(function(length, index, array) {
+        var new_sum = lsum + length;
+        if (Math.floor(new_sum / ctgsum * 1000) > Math.floor(lsum / ctgsum * 100)) {
+          nctg_length[Math.floor(new_sum / ctgsum * 1000)] = length;
+          nctg_count[Math.floor(new_sum / ctgsum * 1000)] = index + 1;
+        }
+        lsum = new_sum;
+      });
+      this.seq.forEach(function(i, index) {
+        if (!nctg_length[i]) nctg_length[i] = nctg_length[(i + 1)];
+        if (!nctg_count[i]) nctg_count[i] = nctg_count[(i + 1)];
+      });
+      this.nctg_length = $.map(nctg_length,function(value,index){return value});
+      this.nctg_count = $.map(nctg_count,function(value,index){return value});
+      this.contig_count = stats.contigs.length;
+    }
+  }
   this.scale = {};
   this.setScale('percent', 'linear', [0, 100], [180 * (Math.PI / 180), 90 * (Math.PI / 180)]);
   this.setScale('100percent', 'linear', [0, 100], [0, 2 * Math.PI]);
@@ -105,6 +103,7 @@ Assembly.prototype.drawPlot = function(parent_div, longest, circle_span) {
   var tick = 10;
   var w = 12; // coloured box size for legend
 
+  this.parent_div = parent_div;
   var parent = d3.select('#' + parent_div);
   var svg = parent.append('svg');
 
@@ -205,7 +204,7 @@ Assembly.prototype.drawPlot = function(parent_div, longest, circle_span) {
       .y(function(d, i) {
         return Math.sin(pScale((1000 - i) / 10) - Math.PI / 2) * (gScale(d));
       });
-    var atgc = line([0]) + 'L' + line(lower).replace(/M[^L]+?/, '') + revline(upper).replace('M', 'L')
+    var atgc = line([0]) + 'L' + line(lower).replace(/M[^L]+?/, '') + revline(upper.reverse()).replace('M', 'L')
 
     bcdg.append("path")
       .attr("class", "asm-atgc")
@@ -227,8 +226,23 @@ Assembly.prototype.drawPlot = function(parent_div, longest, circle_span) {
     .attr("id", "asm-g-base_composition_axis");
   percent_axis(bcag, radii, pScale);
 
-  // plot CEGMA completeness if available
-  if (this.cegma_complete) {
+  // plot BUSCO/CEGMA completeness if available
+  if (this.busco) {
+    var ccg = g.append('g')
+      .attr('transform', 'translate(' + (radii.percent[1] + tick * 3.5) + ',' + (-radii.percent[1] - tick * 0) + ')')
+      .attr("id", "asm-busco_completeness");
+    var ccdg = ccg.append('g')
+      .attr("id", "asm-busco_completeness_data");
+    plot_arc(ccdg, radii.ceg[1]/1.5, radii.ceg[2], p100Scale(this.busco.C), p100Scale(this.busco.C+this.busco.F), 'asm-busco_F');
+    plot_arc(ccdg, radii.ceg[1]/1.5, radii.ceg[2], p100Scale(0), p100Scale(this.busco.C), 'asm-busco_C');
+    plot_arc(ccdg, radii.ceg[1]/1.5, radii.ceg[2], p100Scale(0), p100Scale(this.busco.D), 'asm-busco_D');
+    var ccag = ccg.append('g')
+      .attr("id", "asm-busco_completeness_axis");
+    ccag.append('circle').attr('r', radii.ceg[1]/1.5).attr('class', 'asm-axis');
+    ccag.append('line').attr('y1', -radii.ceg[1]/1.5).attr('y2', -radii.ceg[2]).attr('class', 'asm-axis');
+    cegma_axis(ccag, radii, p100Scale);
+  }
+  else if (this.cegma_complete) {
     var ccg = g.append('g')
       .attr('transform', 'translate(' + (radii.percent[1] + tick * 3) + ',' + (-radii.percent[1] - tick * 2) + ')')
       .attr("id", "asm-cegma_completeness");
@@ -418,8 +432,23 @@ Assembly.prototype.drawPlot = function(parent_div, longest, circle_span) {
   var lg = g.append('g')
     .attr("id", "asm-g-legend");
 
-  // draw CEGMA legend
-  if (this.cegma_complete) {
+  // draw BUSCO/CEGMA legend
+  if (this.busco) {
+    var lccg = lg.append('g')
+      .attr("id", "asm-g-busco_completeness_legend");
+    var txt = lccg.append('text')
+      .attr('transform', 'translate(' + (size / 2 - 210) + ',' + (-size / 2 + 20) + ')')
+      .attr('class', 'asm-tr_title');
+    txt.append('tspan').text('BUSCO (n = ' + this.busco.n.toLocaleString() + ')');
+    var key = lccg.append('g').attr('transform', 'translate(' + (size / 2 - 210) + ',' + (-size / 2 + 28) + ')');
+    key.append('rect').attr('height', w).attr('width', w).attr('class', 'asm-busco_C asm-toggle');
+    key.append('text').attr('x', w + 3).attr('y', w - 1).text('Comp. (' + this.busco.C.toFixed(1) + '%)').attr('class', 'asm-key');
+    key.append('rect').attr('y', w * 1.5).attr('height', w).attr('width', w).attr('class', 'asm-busco_D asm-toggle');
+    key.append('text').attr('x', w + 3).attr('y', w * 2.5 - 1).text('Dup. (' + this.busco.D.toFixed(1) + '%)').attr('class', 'asm-key');
+    key.append('rect').attr('y', w * 3).attr('height', w).attr('width', w).attr('class', 'asm-busco_F asm-toggle');
+    key.append('text').attr('x', w + 3).attr('y', w * 4 - 1).text('Frag. (' + this.busco.F.toFixed(1) + '%)').attr('class', 'asm-key');
+  }
+  else if (this.cegma_complete) {
     var lccg = lg.append('g')
       .attr("id", "asm-g-cegma_completeness_legend");
     var txt = lccg.append('text')
@@ -442,12 +471,15 @@ Assembly.prototype.drawPlot = function(parent_div, longest, circle_span) {
   txt.append('tspan').text('Assembly');
   txt.append('tspan').text('base composition').attr('x', 0).attr('dy', 18);
   var key = lbcg.append('g').attr('transform', 'translate(' + (size / 2 - 140) + ',' + (size / 2 - 83) + ')');
+  var at_text = 'AT (' + (this.ATGC - this.GC).toFixed(1) + '%)';
+  var gc_text = 'GC (' + this.GC.toFixed(1) + '%)';
+  var n_text = 'N (' + n.toFixed(1) + '%)';
   key.append('rect').attr('height', w).attr('width', w).attr('class', 'asm-gc asm-toggle');
-  key.append('text').attr('x', w + 2).attr('y', w - 1).text('GC (' + this.GC + '%)').attr('class', 'asm-key');
+  key.append('text').attr('x', w + 2).attr('y', w - 1).text(gc_text).attr('class', 'asm-key').attr('id','asm-gc_value');
   key.append('rect').attr('y', w * 1.5).attr('height', w).attr('width', w).attr('class', 'asm-atgc asm-toggle');
-  key.append('text').attr('x', w + 2).attr('y', w * 2.5 - 1).text('AT (' + (this.ATGC - this.GC).toFixed(1) + '%)').attr('class', 'asm-key');
+  key.append('text').attr('x', w + 2).attr('y', w * 2.5 - 1).text(at_text).attr('class', 'asm-key').attr('id','asm-at_value');
   key.append('rect').attr('y', w * 3).attr('height', w).attr('width', w).attr('class', 'asm-ns asm-toggle');
-  key.append('text').attr('x', w + 2).attr('y', w * 4 - 1).text('N (' + n.toFixed(1) + '%)').attr('class', 'asm-key');
+  key.append('text').attr('x', w + 2).attr('y', w * 4 - 1).text(n_text).attr('class', 'asm-key').attr('id','asm-n_value');
 
 
   //draw scaffold legend
@@ -464,7 +496,7 @@ Assembly.prototype.drawPlot = function(parent_div, longest, circle_span) {
   var count_txt = key.append('text').attr('x', w + 3).attr('y', w - 1).attr('class', 'asm-key')
   count_txt.append('tspan').text('Log')
   count_txt.append('tspan').attr('baseline-shift', 'sub').attr('font-size', '75%').text(10)
-  count_txt.append('tspan').text(' scaffold count (total ' + this.scaffolds.length.toLocaleString() + ')');
+  count_txt.append('tspan').text(' scaffold count (total ' + this.scaffold_count.toLocaleString() + ')');
   key.append('rect').attr('y', w * 1.5).attr('height', w).attr('width', w).attr('class', 'asm-pie asm-toggle');
   key.append('text').attr('x', w + 3).attr('y', w * 2.5 - 1).text('Scaffold length (total ' + getReadableSeqSizeString(this.assembly, 0) + ')').attr('class', 'asm-key');
 
@@ -472,9 +504,9 @@ Assembly.prototype.drawPlot = function(parent_div, longest, circle_span) {
   key.append('rect').attr('y', w * 3).attr('height', w).attr('width', w).attr('class', 'asm-longest_pie asm-toggle');
   key.append('text').attr('x', w + 3).attr('y', w * 4 - 1).text('Longest scaffold (' + getReadableSeqSizeString(this.scaffolds[0]) + ')').attr('class', 'asm-key');
   key.append('rect').attr('y', w * 4.5).attr('height', w).attr('width', w).attr('class', 'asm-n50_pie asm-toggle');
-  key.append('text').attr('x', w + 3).attr('y', w * 5.5 - 1).text('N50 length (' + getReadableSeqSizeString(this.npct_length[500]) + ')').attr('class', 'asm-key');
+  key.append('text').attr('x', w + 3).attr('y', w * 5.5 - 1).text('N50 length (' + getReadableSeqSizeString(this.npct_length[499]) + ')').attr('class', 'asm-key');
   key.append('rect').attr('y', w * 6).attr('height', w).attr('width', w).attr('class', 'asm-n90_pie asm-toggle');
-  key.append('text').attr('x', w + 3).attr('y', w * 7 - 1).text('N90 length (' + getReadableSeqSizeString(this.npct_length[900]) + ')').attr('class', 'asm-key');
+  key.append('text').attr('x', w + 3).attr('y', w * 7 - 1).text('N90 length (' + getReadableSeqSizeString(this.npct_length[899]) + ')').attr('class', 'asm-key');
 
   //draw contig legend if available
   if (this.contigs) {
@@ -490,7 +522,7 @@ Assembly.prototype.drawPlot = function(parent_div, longest, circle_span) {
     var count_txt = key.append('text').attr('x', w + 2).attr('y', w - 1).attr('class', 'asm-key')
     count_txt.append('tspan').text('Log')
     count_txt.append('tspan').attr('baseline-shift', 'sub').attr('font-size', '75%').text(10)
-    count_txt.append('tspan').text(' contig count (total ' + this.contigs.length.toLocaleString() + ')');
+    count_txt.append('tspan').text(' contig count (total ' + this.contig_count.toLocaleString() + ')');
     key.append('rect').attr('y', w * 1.5).attr('height', w).attr('width', w).attr('class', 'asm-contig asm-toggle');
     key.append('text').attr('x', w + 3).attr('y', w * 2.5 - 1).text('Contig length').attr('class', 'asm-key');
   }
@@ -546,11 +578,12 @@ Assembly.prototype.drawPlot = function(parent_div, longest, circle_span) {
   });
 
   // toggle form visibility
+  // TODO - fix bug with position in screen coords
   d3.selectAll('#'+parent_div+' .asm-scale_rect').on('click', function() {
     form_div_wrapper.classed('hidden', !form_div_wrapper.classed('hidden'))
     var rect = svg.node().getBoundingClientRect();
-    form_div_wrapper.style('left', rect.left)
-    form_div_wrapper.style('top', rect.top)
+    form_div_wrapper.style('left', rect.left + window.scrollX * 1)
+    form_div_wrapper.style('top', rect.top + window.scrollY * 1)
     form_div_wrapper.style('height', rect.height)
     form_div_wrapper.style('width', rect.width)
 
@@ -569,7 +602,7 @@ Assembly.prototype.drawPlot = function(parent_div, longest, circle_span) {
       });
       $.each(classNames, function(i, className) {
         if (className != 'asm-toggle') {
-          $('.' + className).each(function() {
+          $('#'+parent_div+' .' + className).each(function() {
             if (this != button) {
               $(this).css({
                 visibility: "hidden"
@@ -585,7 +618,7 @@ Assembly.prototype.drawPlot = function(parent_div, longest, circle_span) {
       });
       $.each(classNames, function(i, className) {
         if (className != 'asm-toggle') {
-          $('.' + className).each(function() {
+          $('#'+parent_div+' .' + className).each(function() {
             if (this != button) {
               $(this).css({
                 visibility: "visible"
@@ -594,18 +627,18 @@ Assembly.prototype.drawPlot = function(parent_div, longest, circle_span) {
           });
         }
         if (className == 'asm-count') {
-          $('.asm-contig_count.asm-toggle').css({
+          $('#'+parent_div+' .asm-contig_count.asm-toggle').css({
             fill: "rgb(255, 255, 255)"
           })
-          $('.asm-contig_count.asm-remote').css({
+          $('#'+parent_div+' .asm-contig_count.asm-remote').css({
             visibility: "hidden"
           })
         }
         if (className == 'asm-contig_count') {
-          $('.asm-count.asm-toggle').css({
+          $('#'+parent_div+' .asm-count.asm-toggle').css({
             fill: "rgb(255, 255, 255)"
           })
-          $('.asm-count.asm-remote').css({
+          $('#'+parent_div+' .asm-count.asm-remote').css({
             visibility: "hidden"
           })
         }
@@ -621,6 +654,8 @@ Assembly.prototype.drawPlot = function(parent_div, longest, circle_span) {
   var output = overlay.append('g').attr('transform', 'translate(' + (size / 2 - 142) + ',' + (size / 2 - 128) + ')');
   var output_rect = output.append('rect').attr('class', 'asm-live_stats hidden').attr('height', 110).attr('width', 150);
   var output_text = output.append('g').attr('transform', 'translate(' + (2) + ',' + (18) + ')').attr('class', 'hidden');
+//  var output_gc = output.append('g').attr('transform', 'translate(' + (17) + ',' + (18) + ')').attr('class', 'hidden');
+  var gc_circle = overoverlay.append('circle').attr('r', radii.percent[0]).attr('fill', 'white').style('opacity', 0);
   var stat_circle = overoverlay.append('circle').attr('r', radii.core[1]).attr('fill', 'white').style('opacity', 0);
   stat_circle.on('mousemove', function() {
     output_rect.classed('hidden', false);
@@ -647,11 +682,11 @@ Assembly.prototype.drawPlot = function(parent_div, longest, circle_span) {
       var txt = output_text.append('text')
         .attr('class', 'asm-live_title');
       txt.append('tspan').text('N' + angle);
-      output_text.append('text').attr('y', 18).text(npct_count[(angle * 10)].toLocaleString() + ' scaffolds').attr('class', 'asm-key');
-      output_text.append('text').attr('x', 120).attr('y', w * 1.2 + 18).text('>= ' + getReadableSeqSizeString(npct_length[(angle * 10)])).attr('class', 'asm-key asm-right');
+      output_text.append('text').attr('y', 18).text(npct_count[(angle * 10)-1].toLocaleString() + ' scaffolds').attr('class', 'asm-key');
+      output_text.append('text').attr('x', 120).attr('y', w * 1.2 + 18).text('>= ' + getReadableSeqSizeString(npct_length[(angle * 10)-1])).attr('class', 'asm-key asm-right');
       if (nctg_length) {
-        output_text.append('text').attr('y', w * 3 + 18).text(nctg_count[(angle * 10)].toLocaleString() + ' contigs').attr('class', 'asm-key');
-        output_text.append('text').attr('x', 120).attr('y', w * 4.2 + 18).text('>= ' + getReadableSeqSizeString(nctg_length[(angle * 10)])).attr('class', 'asm-key asm-right');
+        output_text.append('text').attr('y', w * 3 + 18).text(nctg_count[(angle * 10)-1].toLocaleString() + ' contigs').attr('class', 'asm-key');
+        output_text.append('text').attr('x', 120).attr('y', w * 4.2 + 18).text('>= ' + getReadableSeqSizeString(nctg_length[(angle * 10)-1])).attr('class', 'asm-key asm-right');
       }
     } else {
       output_rect.classed('hidden', true);
@@ -665,6 +700,90 @@ Assembly.prototype.drawPlot = function(parent_div, longest, circle_span) {
     path.classed('hidden', true);
   });
 
+  // update gc content stats on mouseover
+  if (typeof this.GCs != 'undefined' && this.GCs instanceof Array){
+    var GCs = this.GCs;
+    var Ns = this.Ns;
+    var slow_plot;
+//      var sgcg = output_gc.append('g')
+//        .attr('transform', 'translate(' + (radii.ceg[2] + tick * 1) + ',' + (radii.ceg[2] + tick * 1) + ')')
+//        .attr("id", "asm-segment_gc");
+//      var sgcdg = sgcg.append('g')
+//        .attr("id", "asm-segment_gc_data");
+//      var sgcag = sgcg.append('g')
+//        .attr("id", "asm-segment_gc_axis");
+      //ccag.append('circle').attr('r', radii.ceg[1]).attr('class', 'asm-ceg_line');
+      //ccag.append('line').attr('y2', -radii.ceg[2]).attr('class', 'asm-axis');
+//      cegma_axis(sgcag, radii, p100Scale);
+
+    gc_circle.on('mousemove', function() {
+      clearTimeout(slow_plot);
+//      output_rect.classed('hidden', false);
+//      output_text.classed('hidden', false);
+//      output_gc.classed('hidden', false);
+      path.classed('hidden', false);
+//      output_text.selectAll('text').remove();
+
+
+      var point = d3.mouse(this);
+      var angle = (50.5 + 50 / Math.PI * Math.atan2(-point[0], point[1])).toFixed(0);
+      angle = Math.floor(angle * p100Scale(100) / pScale(100) + 0.1)
+
+      if (angle <= 100) {
+        slow_plot = setTimeout(function(){
+
+        var arc = d3.svg.arc()
+          .innerRadius(radii.core[0])
+          .outerRadius(radii.percent[0])
+          .startAngle(pScale(angle - 1))
+          .endAngle(pScale(angle));
+        path
+          .attr('d', arc)
+          .attr('class', 'asm-live_segment');
+
+
+        var txt = output_text.append('text')
+          .attr('class', 'asm-live_title');
+        txt.append('tspan').text((angle - 1) + '-' + angle + '%');
+
+        // plot segment percentages as pie
+        var seg_n = Ns.slice((angle-1) * 10,angle*10).reduce(function(a, b) { return a + b; }, 0)/10;
+        var seg_gc = GCs.slice((angle-1) * 10,angle*10).reduce(function(a, b) { return a + b; }, 0)/10;
+        var seg_gc_start = seg_n / 100 * seg_gc;
+
+          $('#'+parent_div+' #asm-at_value').text('AT (' + (100 - seg_gc).toFixed(1) + '%)');
+          $('#'+parent_div+' #asm-gc_value').text('GC (' + seg_gc.toFixed(1) + '%)');
+          $('#'+parent_div+' #asm-n_value').text('N (' + seg_n.toFixed(1) + '%)');
+          //plot_arc(sgcdg, radii.ceg[1]/1.5, radii.ceg[2], p100Scale(0), p100Scale(100), 'asm-ns');
+          //plot_arc(sgcdg, radii.ceg[1]/1.5, radii.ceg[2], p100Scale(seg_gc_start), p100Scale(seg_gc_start + (100 - seg_n)), 'asm-atgc');
+          //plot_arc(sgcdg, radii.ceg[1]/1.5, radii.ceg[2], p100Scale(seg_gc_start), p100Scale(seg_gc), 'asm-gc');
+
+          //sgcdg.append('circle').attr('r', radii.ceg[1]/1.5).attr('class', 'asm-axis');
+        })
+
+      } else {
+        clearTimeout(slow_plot);
+        $('#'+parent_div+' #asm-at_value').text(at_text);
+        $('#'+parent_div+' #asm-gc_value').text(gc_text);
+        $('#'+parent_div+' #asm-n_value').text(n_text);
+        path.classed('hidden', true);
+      }
+    });
+    gc_circle.on('mouseout', function() {
+      clearTimeout(slow_plot);
+      $('#'+parent_div+' #asm-at_value').text(at_text);
+      $('#'+parent_div+' #asm-gc_value').text(gc_text);
+      $('#'+parent_div+' #asm-n_value').text(n_text);
+      path.classed('hidden', true);
+    });
+  }
+}
+
+Assembly.prototype.toggleVisible = function(css_class_array) {
+  var parent_div = this.parent_div;
+  css_class_array.forEach(function(css_class){
+    $('#' + parent_div + ' .' + css_class + '.asm-toggle').trigger('click');
+  });
 }
 
 Assembly.prototype.reDrawPlot = function(parent, longest, circle_span) {
@@ -846,3 +965,15 @@ function toInt(number) {
   }
   return number
 }
+
+function getReadableSeqSizeString(seqSizeInBases, fixed) {
+  // function based on answer at http://stackoverflow.com/questions/10420352/converting-file-size-in-bytes-to-human-readable
+  var i = -1;
+  var baseUnits = [' kB', ' MB', ' GB', ' TB'];
+  do {
+    seqSizeInBases = seqSizeInBases / 1000;
+    i++;
+  } while (seqSizeInBases >= 1000);
+  fixed = fixed ? fixed : fixed == 0 ? 0 : 1;
+  return Math.max(seqSizeInBases, 0.1).toFixed(fixed) + baseUnits[i];
+};
