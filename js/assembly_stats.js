@@ -244,13 +244,13 @@ Assembly.prototype.drawPlot = function(parent_div, longest, circle_span) {
       .attr("id", "asm-busco_completeness");
     var ccdg = ccg.append('g')
       .attr("id", "asm-busco_completeness_data");
-    plot_arc(ccdg, radii.ceg[1]/2, radii.ceg[2], p100Scale(this.busco.C), p100Scale(this.busco.C+this.busco.F), 'asm-busco_F');
-    plot_arc(ccdg, radii.ceg[1]/2, radii.ceg[2], p100Scale(0), p100Scale(this.busco.C), 'asm-busco_C');
-    plot_arc(ccdg, radii.ceg[1]/2, radii.ceg[2], p100Scale(0), p100Scale(this.busco.D), 'asm-busco_D');
+    plot_arc(ccdg, radii.ceg[1]/1.5, radii.ceg[2], p100Scale(this.busco.C), p100Scale(this.busco.C+this.busco.F), 'asm-busco_F');
+    plot_arc(ccdg, radii.ceg[1]/1.5, radii.ceg[2], p100Scale(0), p100Scale(this.busco.C), 'asm-busco_C');
+    plot_arc(ccdg, radii.ceg[1]/1.5, radii.ceg[2], p100Scale(0), p100Scale(this.busco.D), 'asm-busco_D');
     var ccag = ccg.append('g')
       .attr("id", "asm-busco_completeness_axis");
-    ccag.append('circle').attr('r', radii.ceg[1]/2).attr('class', 'asm-ceg_line');
-    ccag.append('line').attr('y1', -radii.ceg[1]/2).attr('y2', -radii.ceg[2]).attr('class', 'asm-axis');
+    ccag.append('circle').attr('r', radii.ceg[1]/1.5).attr('class', 'asm-axis');
+    ccag.append('line').attr('y1', -radii.ceg[1]/1.5).attr('y2', -radii.ceg[2]).attr('class', 'asm-axis');
     cegma_axis(ccag, radii, p100Scale);
   }
   else if (this.cegma_complete) {
