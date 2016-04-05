@@ -1,15 +1,3 @@
-function getReadableSeqSizeString(seqSizeInBases, fixed) {
-  // function based on answer at http://stackoverflow.com/questions/10420352/converting-file-size-in-bytes-to-human-readable
-  var i = -1;
-  var baseUnits = [' kB', ' MB', ' GB', ' TB'];
-  do {
-    seqSizeInBases = seqSizeInBases / 1000;
-    i++;
-  } while (seqSizeInBases >= 1000);
-  fixed = fixed ? fixed : fixed == 0 ? 0 : 1;
-  return Math.max(seqSizeInBases, 0.1).toFixed(fixed) + baseUnits[i];
-};
-
 function Assembly(stats, scaffolds, contigs) {
   this.scaffolds = scaffolds ? scaffolds : stats.scaffolds;
   this.contigs = contigs ? contigs : stats.contigs;
@@ -789,8 +777,11 @@ Assembly.prototype.drawPlot = function(parent_div, longest, circle_span) {
   }
 }
 
-Assembly.prototype.toggleVisible = function(css_class) {
-  $('#' + this.parent_div + ' .' + css_class + '.asm-toggle').trigger('click');
+Assembly.prototype.toggleVisible = function(css_class_array) {
+  var parent_div = this.parent_div;
+  css_class_array.forEach(function(css_class){
+    $('#' + parent_div + ' .' + css_class + '.asm-toggle').trigger('click');
+  });
 }
 
 Assembly.prototype.reDrawPlot = function(parent, longest, circle_span) {
@@ -972,3 +963,15 @@ function toInt(number) {
   }
   return number
 }
+
+function getReadableSeqSizeString(seqSizeInBases, fixed) {
+  // function based on answer at http://stackoverflow.com/questions/10420352/converting-file-size-in-bytes-to-human-readable
+  var i = -1;
+  var baseUnits = [' kB', ' MB', ' GB', ' TB'];
+  do {
+    seqSizeInBases = seqSizeInBases / 1000;
+    i++;
+  } while (seqSizeInBases >= 1000);
+  fixed = fixed ? fixed : fixed == 0 ? 0 : 1;
+  return Math.max(seqSizeInBases, 0.1).toFixed(fixed) + baseUnits[i];
+};

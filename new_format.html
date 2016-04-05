@@ -6040,10 +6040,12 @@
                                       n:843 },
     };
 	    var asm = new Assembly (stats);
+      var asm2 = new Assembly (stats);
       $(document).ready(function(){
           asm.drawPlot('assembly_stats'); // <target_div_id>,[radial_scale],circumference_scale]
+          asm2.drawPlot('assembly_stats2'); // <target_div_id>,[radial_scale],circumference_scale]
           // adjust visible/hidden layers:
-          // asm.toggleVisible('asm-longest_pie')
+          asm2.toggleVisible(['asm-longest_pie','asm-n50_pie','asm-n90_pie','asm-pie','asm-contig_count','asm-contig'])
         });
     </script>
 
@@ -6052,7 +6054,8 @@
       <span style="font-size:14pt;">
 
       </span>
-      <div id="assembly_stats" style="width:100%;height:100%"></div>
+      <div id="assembly_stats" style="width:800;height:800;float:left;"></div>
+      <div id="assembly_stats2" style="width:800;height:800;float:left;"></div>
       <span style="font-size:10pt;">
 
       </span>
