@@ -404,7 +404,7 @@ Assembly.prototype.drawPlot = function(parent_div, longest, circle_span) {
     .attr("id", "asm-g-scaffold_length_axis");
 
   length_seq.forEach(function(i, index) {
-    if (Math.pow(10, i + 3) > longest && Math.pow(10, i + 1) > npct_length[1000]) {
+    if (Math.pow(10, i + 4) >= longest && Math.pow(10, i + 1) > npct_length[900] && Math.pow(10, i) < npct_length[100]) {
       slag.append('text')
         .attr('transform', 'translate(' + (Math.pow(1.5, i) + 2) + ',' + (-radii.core[1] + lScale(Math.pow(10, i)) + 4) + ')')
         .text(getReadableSeqSizeString(Math.pow(10, i), 0))
