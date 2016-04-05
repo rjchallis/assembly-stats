@@ -577,11 +577,14 @@ Assembly.prototype.drawPlot = function(parent_div, longest, circle_span) {
   });
 
   // toggle form visibility
+  // TODO - fix bug with position in screen coords
   d3.selectAll('#'+parent_div+' .asm-scale_rect').on('click', function() {
     form_div_wrapper.classed('hidden', !form_div_wrapper.classed('hidden'))
     var rect = svg.node().getBoundingClientRect();
-    form_div_wrapper.style('left', rect.left)
-    form_div_wrapper.style('top', rect.top)
+    console.log(window.scrollY);
+    console.log(window.scrollX);
+    form_div_wrapper.style('left', rect.left + window.scrollX * 1)
+    form_div_wrapper.style('top', rect.top + window.scrollY * 1)
     form_div_wrapper.style('height', rect.height)
     form_div_wrapper.style('width', rect.width)
 
