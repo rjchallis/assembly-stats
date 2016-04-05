@@ -114,6 +114,7 @@ Assembly.prototype.drawPlot = function(parent_div, longest, circle_span) {
   var tick = 10;
   var w = 12; // coloured box size for legend
 
+  this.parent_div = parent_div;
   var parent = d3.select('#' + parent_div);
   var svg = parent.append('svg');
 
@@ -772,6 +773,10 @@ Assembly.prototype.drawPlot = function(parent_div, longest, circle_span) {
     });
   }
   */
+}
+
+Assembly.prototype.toggleVisible = function(css_class) {
+  $('#' + this.parent_div + ' .' + css_class + '.asm-toggle').trigger('click');
 }
 
 Assembly.prototype.reDrawPlot = function(parent, longest, circle_span) {
