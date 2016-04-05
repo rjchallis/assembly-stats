@@ -40,6 +40,21 @@
     stroke-width: 0px;
     fill: rgb(31, 120, 180);
   }
+  .asm-busco_C {
+    stroke: rgb(51, 160, 44);
+    stroke-width: 0px;
+    fill: rgb(51, 160, 44);
+  }
+  .asm-busco_F {
+    stroke: rgb(178, 223, 138);
+    stroke-width: 0px;
+    fill: rgb(178, 223, 138);
+  }
+  .asm-busco_D {
+    stroke: rgb(35, 108, 30);
+    stroke-width: 0px;
+    fill: rgb(35, 108, 30);
+  }
   .asm-ceg_comp {
     stroke: rgb(51, 160, 44);
     stroke-width: 0px;
@@ -54,7 +69,7 @@
     stroke: #555555;
     stroke-width: 0.67px;
     fill: none;
-    opacity: 0.6;
+    opacity: 0;
   }
   .asm-contig_count {
     stroke: rgb(202, 178, 214);
