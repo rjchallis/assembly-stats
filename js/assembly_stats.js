@@ -2,7 +2,6 @@ function Assembly(stats, scaffolds, contigs) {
   this.scaffolds = scaffolds ? scaffolds : stats.scaffolds;
   this.contigs = contigs ? contigs : stats.contigs;
   this.scaffold_count = stats.scaffold_count ? stats.scaffold_count : stats.scaffolds.length;
-  this.contig_count = stats.contig_count ? stats.contig_count : stats.contigs.length;
   this.genome = stats.genome;
   this.assembly = stats.assembly;
   this.N = stats.N ? stats.N <= 100 ? stats.N < 1 ? stats.N * 100 : stats.N : stats.N / this.assembly * 100 : 0;
@@ -25,6 +24,7 @@ function Assembly(stats, scaffolds, contigs) {
     if (stats.binned_contig_lengths){
       this.nctg_length = stats.binned_contig_lengths;
       this.nctg_count = stats.binned_contig_counts;
+      this.contig_count = stats.contig_count;
     }
   }
   else {
@@ -78,6 +78,7 @@ function Assembly(stats, scaffolds, contigs) {
       });
       this.nctg_length = nctg_length;
       this.nctg_count = nctg_count;
+      this.contig_count = stats.contigs.length;
     }
   }
   this.scale = {};
