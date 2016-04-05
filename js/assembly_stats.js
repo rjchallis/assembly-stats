@@ -52,8 +52,8 @@ function Assembly(stats, scaffolds, contigs) {
       if (!npct_length[i]) npct_length[i] = npct_length[(i + 1)];
       if (!npct_count[i]) npct_count[i] = npct_count[(i + 1)];
     });
-    this.npct_length = npct_length;
-    this.npct_count = npct_count;
+    this.npct_length = $.map(npct_length,function(value,index){return value});
+    this.npct_count = $.map(npct_count,function(value,index){return value});
 
     var nctg_length = {};
     var nctg_count = {};
@@ -76,8 +76,8 @@ function Assembly(stats, scaffolds, contigs) {
         if (!nctg_length[i]) nctg_length[i] = nctg_length[(i + 1)];
         if (!nctg_count[i]) nctg_count[i] = nctg_count[(i + 1)];
       });
-      this.nctg_length = nctg_length;
-      this.nctg_count = nctg_count;
+      this.nctg_length = $.map(nctg_length,function(value,index){return value});
+      this.nctg_count = $.map(nctg_count,function(value,index){return value});
       this.contig_count = stats.contigs.length;
     }
   }
@@ -504,9 +504,9 @@ Assembly.prototype.drawPlot = function(parent_div, longest, circle_span) {
   key.append('rect').attr('y', w * 3).attr('height', w).attr('width', w).attr('class', 'asm-longest_pie asm-toggle');
   key.append('text').attr('x', w + 3).attr('y', w * 4 - 1).text('Longest scaffold (' + getReadableSeqSizeString(this.scaffolds[0]) + ')').attr('class', 'asm-key');
   key.append('rect').attr('y', w * 4.5).attr('height', w).attr('width', w).attr('class', 'asm-n50_pie asm-toggle');
-  key.append('text').attr('x', w + 3).attr('y', w * 5.5 - 1).text('N50 length (' + getReadableSeqSizeString(this.npct_length[500]) + ')').attr('class', 'asm-key');
+  key.append('text').attr('x', w + 3).attr('y', w * 5.5 - 1).text('N50 length (' + getReadableSeqSizeString(this.npct_length[499]) + ')').attr('class', 'asm-key');
   key.append('rect').attr('y', w * 6).attr('height', w).attr('width', w).attr('class', 'asm-n90_pie asm-toggle');
-  key.append('text').attr('x', w + 3).attr('y', w * 7 - 1).text('N90 length (' + getReadableSeqSizeString(this.npct_length[900]) + ')').attr('class', 'asm-key');
+  key.append('text').attr('x', w + 3).attr('y', w * 7 - 1).text('N90 length (' + getReadableSeqSizeString(this.npct_length[899]) + ')').attr('class', 'asm-key');
 
   //draw contig legend if available
   if (this.contigs) {
