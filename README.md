@@ -1,5 +1,7 @@
 # assembly_stats
-An assembly metric visualisation to allow rapid visual assessment and comparison of assembly quality.  [![DOI](https://zenodo.org/badge/20772/rjchallis/assembly_stats.svg)](https://zenodo.org/badge/latestdoi/20772/rjchallis/assembly_stats)
+[![DOI](https://zenodo.org/badge/20772/rjchallis/assembly_stats.svg)](https://zenodo.org/badge/latestdoi/20772/rjchallis/assembly_stats)
+
+An assembly metric visualisation to allow rapid visual assessment and comparison of assembly quality.  
 
 ![Screenshot](http://rjchallis.github.io/assembly_stats/screenshots/assembly_stats.png "Screenshot")
 
