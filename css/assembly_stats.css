@@ -40,6 +40,16 @@
     stroke-width: 0px;
     fill: rgb(31, 120, 180);
   }
+  .asm-atgc-line {
+    stroke: rgb(166, 206, 227);
+    stroke-width: 0.25px;
+    fill: none;
+  }
+  .asm-gc-line {
+    stroke: rgb(31, 120, 180);
+    stroke-width: 0.5px;
+    fill: none;
+  }
   .asm-busco_C {
     stroke: rgb(51, 160, 44);
     stroke-width: 0px;

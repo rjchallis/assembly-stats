@@ -178,8 +178,16 @@ Assembly.prototype.drawPlot = function(parent_div, longest, circle_span) {
     var upper = [];
     var GCs = this.GCs;
     var Ns = this.Ns;
+    var GCs_min;
+    var GCs_max;
+    if (Ns[0].hasOwnProperty('mean')){
+      Ns = Ns.map(function(d){return d.mean})
+      GCs_min = GCs.map(function(d){return d.min})
+      GCs_max = GCs.map(function(d){return d.max})
+      GCs = GCs.map(function(d){return d.mean})
+    }
     Ns.forEach(function(current, i) {
-      lower.push((current / 100 * GCs[i]));
+      lower.push((0));
       upper.push((100 - current + lower[i]));
     });
     var line = d3.svg.line()
@@ -210,12 +218,21 @@ Assembly.prototype.drawPlot = function(parent_div, longest, circle_span) {
       .attr("class", "asm-atgc")
       .attr("d", atgc)
       .attr("fill-rule", "evenodd");
-    var gc = line([0]) + 'L' + line(lower).replace(/M[^L]+?/, '') + revline(GCs).replace('M', 'L')
+    var gc = line([0]) + 'L' + line(lower).replace(/M[^L]+?/, '') + revline(GCs.reverse()).replace('M', 'L')
     bcdg.append("path")
       .attr("class", "asm-gc")
       .attr("d", gc)
       .attr("fill-rule", "evenodd");
-
+    if (GCs_min){
+      var gc_min = revline(GCs_min.reverse())
+      bcdg.append("path")
+        .attr("class", "asm-atgc-line")
+        .attr("d", gc_min);
+      var gc_max = revline(GCs_max.reverse())
+      bcdg.append("path")
+        .attr("class", "asm-gc-line")
+        .attr("d", gc_max);
+    }
 
   } else {
     plot_arc(bcdg, radii.percent[0], radii.percent[1], pScale(0), pScale(100), 'asm-ns');
@@ -704,6 +721,10 @@ Assembly.prototype.drawPlot = function(parent_div, longest, circle_span) {
   if (typeof this.GCs != 'undefined' && this.GCs instanceof Array){
     var GCs = this.GCs;
     var Ns = this.Ns;
+    if (Ns[0].hasOwnProperty('mean')){
+      Ns = Ns.map(function(d){return d.mean});
+      GCs = GCs.map(function(d){return d.mean});
+    }
     var slow_plot;
 //      var sgcg = output_gc.append('g')
 //        .attr('transform', 'translate(' + (radii.ceg[2] + tick * 1) + ',' + (radii.ceg[2] + tick * 1) + ')')
