@@ -245,9 +245,19 @@
   .asm-right {
     text-anchor: end;
   }
+  .assembly_stats {
+    position:relative;
+    height:600px;
+    width: 600px;
+    display:inline-block;
+  }
   #asm-scale_form_wrapper {
     position: absolute;
     text-align: center;
+    height:100%;
+    width:100%;
+    top: 0px;
+    left:0px;
     font-size: 10pt;
     font-family: sans-serif;
     fill: #555555;
@@ -255,6 +265,8 @@
   #asm-scale_form_bg {
     position: relative;
     display: inline-block;
+    height:100%;
+    width:100%;
     background-color: rgba(0, 0, 0, 0.5);
   }
   #asm-scale_form_div {
