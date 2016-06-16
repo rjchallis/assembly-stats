@@ -4,7 +4,9 @@
   </head>
   <body>
     <link rel="stylesheet" type="text/css" href="css/circle-plot.css">
+    <link rel="stylesheet" type="text/css" href="css/square-plot.css">
     <script type="text/javascript" src="js/circle-plot.js"></script>
+    <script type="text/javascript" src="js/square-plot.js"></script>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.2/jquery.min.js"></script>
     <script src="https://d3js.org/d3.v3.min.js" charset="utf-8"></script>
     <style>
@@ -59,7 +61,6 @@
         var tabcount = views.length;
         var tabwidth = 100;
         for (var i = 0; i < tabcount; i++){
-          console.log(views[i])
           var tab_div = tab_container.append('div')
                                      .attr('class','asm-tab')
                                      .style('width',tabwidth)
@@ -67,13 +68,25 @@
           tab_div.on('click',function(){
             var view = d3.select(this).text();
             if (view == 'circle'){
+              plot_container.html('')
               arr[0].drawPlot('asm-plot-container');
             }
             else if (view == 'compare') {
+              plot_container.html('')
               compare(arr[0],arr[1]);
             }
             else if (view == 'cumulative') {
-              plot_container.html('cumulative plot coming soon')
+              plot_container.html('')
+              arr[0].squarePlot('asm-plot-container');
+              arr[0].addKey(assemblies)
+              setTimeout(function(){
+                arr.forEach(function(asm,index){
+                  if (index > 0){
+                    var data = asm.prepareLine();
+                    arr[0].addLine(data,asm.name,asm);
+                  }
+                })
+              },250)
             }
             else if (view == 'table') {
               plot_container.html('table view coming soon')
@@ -89,9 +102,20 @@
         d3.json(assembly+".stats.json", function(error, json) {
           if (error) return console.warn(error);
           arr[index] = new Assembly (json);
-          if (assemblies[1]){
-            if (views[0] == 'compare' && index <= 1){
-              compare(arr[0],arr[1]);
+          arr[index].name = assembly;
+          if (views[0] == 'compare'){
+            if (index <= 1) compare(arr[0],arr[1]);
+          }
+          else if (views[0] == 'cumulative'){
+            if (index == 0){
+              arr[0].squarePlot('asm-plot-container');
+              arr[0].addKey(assemblies)
+            }
+            else {
+              var data = arr[index].prepareLine();
+              setTimeout(function(){
+                arr[0].addLine(data,assembly,arr[index]);
+              },250)
             }
           }
           else {
@@ -103,7 +127,6 @@
       function compare (asm1,asm2){
         if (!asm1) return;
         if (!asm2) return;
-        plot_container.html('');
         plot_container.append('div').attr('id','assembly_stats_left').append('p').text(assemblies[0]);
         plot_container.append('div').attr('id','assembly_stats_right').append('p').text(assemblies[1]);
         var span = Math.max(asm1.assembly,asm2.assembly)
