@@ -3,67 +3,116 @@
     <title>assembly stats</title>
   </head>
   <body>
-    <link rel="stylesheet" type="text/css" href="/pages/css/assembly_stats.css">
-    <script type="text/javascript" src="/pages/js/assembly_stats.js"></script>
+    <link rel="stylesheet" type="text/css" href="css/circle-plot.css">
+    <script type="text/javascript" src="js/circle-plot.js"></script>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.2/jquery.min.js"></script>
     <script src="https://d3js.org/d3.v3.min.js" charset="utf-8"></script>
     <style>
+      #assembly_stats {
+        text-align:center;
+        font-family:helvetica,arial,sans-serif;font-size:14pt;
+      }
+      .asm-tab-container {
+        position:relative;width:100%;height:34px;text-align:center;
+        color:white;
+        background-color:#555555;
+      }
+      .asm-tab {
+        position:relative;width:50%;height:30px;display:inline-block;
+        font-size:12pt;
+        line-height:30px;
+        border:solid 2px #cccccc;
+        cursor:pointer;
+      }
+      .asm-plot-container {
+        position:relative;width:100%;height:90%;text-align:center;
+      }
       #assembly_stats_left {
         position:relative;width:50%;height:90%;float:left;text-align:center;
       }
       #assembly_stats_right {
         position:relative;width:50%;height:90%;float:right;text-align:center;
       }
-      p {
-        font-family:helvetica,arial,sans;font-size:14pt;
-      }
     </style>
 
-    <script>
-      var assemblies = window.location.href.replace(/^.+\?/,'').split('&')
-      if (assemblies[1]){
-        document.title = assemblies[0] + " versus " + assemblies[1]
-        var asm1,asm2,ready1,ready2;
-        function compare (asm1,asm2){
-          if (!asm1) return;
-          if (!asm2) return;
-          var span = Math.max(asm1.assembly,asm2.assembly)
-          var longest = Math.max(asm1.scaffolds[0],asm2.scaffolds[0])
-          asm1.drawPlot('assembly_stats_left',longest,span);
-          asm2.drawPlot('assembly_stats_right',longest,span);
-        }
-        $(document).ready(function(){
-          var div = d3.select('div#assembly_stats')
-          div.append('div').attr('id','assembly_stats_left').append('p').text(assemblies[0]);;
-          div.append('div').attr('id','assembly_stats_right').append('p').text(assemblies[1]);
-          d3.json(assemblies[0]+".stats.json", function(error, json) {
-            if (error) return console.warn(error);
-            stats = json;
-            asm1 = new Assembly (stats);
-            compare(asm1,asm2);
-          });
-          d3.json(assemblies[1]+".stats.json", function(error, json) {
-            if (error) return console.warn(error);
-            stats = json;
-            asm2 = new Assembly (stats);
-            compare(asm1,asm2);
-          });
-        });
-      }
-      else {
-        var assembly = assemblies[0]
-        document.title = assembly + " assembly stats"
-        d3.json(assembly+".stats.json", function(error, json) {
-          if (error) return console.warn(error);
-          stats = json;
-          var asm = new Assembly (stats);
-          asm.drawPlot('assembly_stats');
-        });
-      }
-    </script>
     <div id="assembly" style="width:100%;height:100%;">
       <div id="assembly_stats"></div>
     </div>
+
+    <script>
+      var queries = window.location.href.replace(/^.+\?/,'').split('&')
+      var params = [];
+      queries.forEach(function(q){
+        parts = q.split('=')
+        if (!params[parts[0]]) params[parts[0]] = [];
+        params[parts[0]].push(parts[1])
+      })
+      var assemblies = params['assembly'];
+      if (params['altAssembly']) assemblies = assemblies.concat(params['altAssembly'])
+      var views = params['view'];
+
+      if (params['altView']){
+        views = views.concat(params['altView'])
+        // generate tabs
+        var div = d3.select('div#assembly_stats')
+        var tab_container = div.append('div').attr('class','asm-tab-container')
+        var tabcount = views.length;
+        var tabwidth = 100;
+        for (var i = 0; i < tabcount; i++){
+          console.log(views[i])
+          var tab_div = tab_container.append('div')
+                                     .attr('class','asm-tab')
+                                     .style('width',tabwidth)
+                                     .text(views[i])
+          tab_div.on('click',function(){
+            var view = d3.select(this).text();
+            if (view == 'circle'){
+              arr[0].drawPlot('asm-plot-container');
+            }
+            else if (view == 'compare') {
+              compare(arr[0],arr[1]);
+            }
+            else if (view == 'cumulative') {
+              plot_container.html('cumulative plot coming soon')
+            }
+            else if (view == 'table') {
+              plot_container.html('table view coming soon')
+            }
+          })
+
+        }
+      }
+      var plot_container = div.append('div').attr('class','asm-plot-container').attr('id','asm-plot-container')
+      document.title = assemblies[0] + " assembly stats"
+      var arr = [];
+      assemblies.forEach(function(assembly,index){
+        d3.json(assembly+".stats.json", function(error, json) {
+          if (error) return console.warn(error);
+          arr[index] = new Assembly (json);
+          if (assemblies[1]){
+            if (views[0] == 'compare' && index <= 1){
+              compare(arr[0],arr[1]);
+            }
+          }
+          else {
+            arr[0].drawPlot('asm-plot-container');
+          }
+        });
+      })
+
+      function compare (asm1,asm2){
+        if (!asm1) return;
+        if (!asm2) return;
+        plot_container.html('');
+        plot_container.append('div').attr('id','assembly_stats_left').append('p').text(assemblies[0]);
+        plot_container.append('div').attr('id','assembly_stats_right').append('p').text(assemblies[1]);
+        var span = Math.max(asm1.assembly,asm2.assembly)
+        var longest = Math.max(asm1.scaffolds[0],asm2.scaffolds[0])
+        asm1.drawPlot('assembly_stats_left',longest,span);
+        asm2.drawPlot('assembly_stats_right',longest,span);
+      }
+
+    </script>
 
   </body>
 </html>
