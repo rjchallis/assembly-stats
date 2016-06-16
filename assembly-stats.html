@@ -1,0 +1,69 @@
+<html>
+  <head>
+    <title>assembly stats</title>
+  </head>
+  <body>
+    <link rel="stylesheet" type="text/css" href="/pages/css/assembly_stats.css">
+    <script type="text/javascript" src="/pages/js/assembly_stats.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.2/jquery.min.js"></script>
+    <script src="https://d3js.org/d3.v3.min.js" charset="utf-8"></script>
+    <style>
+      #assembly_stats_left {
+        position:relative;width:50%;height:90%;float:left;text-align:center;
+      }
+      #assembly_stats_right {
+        position:relative;width:50%;height:90%;float:right;text-align:center;
+      }
+      p {
+        font-family:helvetica,arial,sans;font-size:14pt;
+      }
+    </style>
+
+    <script>
+      var assemblies = window.location.href.replace(/^.+\?/,'').split('&')
+      if (assemblies[1]){
+        document.title = assemblies[0] + " versus " + assemblies[1]
+        var asm1,asm2,ready1,ready2;
+        function compare (asm1,asm2){
+          if (!asm1) return;
+          if (!asm2) return;
+          var span = Math.max(asm1.assembly,asm2.assembly)
+          var longest = Math.max(asm1.scaffolds[0],asm2.scaffolds[0])
+          asm1.drawPlot('assembly_stats_left',longest,span);
+          asm2.drawPlot('assembly_stats_right',longest,span);
+        }
+        $(document).ready(function(){
+          var div = d3.select('div#assembly_stats')
+          div.append('div').attr('id','assembly_stats_left').append('p').text(assemblies[0]);;
+          div.append('div').attr('id','assembly_stats_right').append('p').text(assemblies[1]);
+          d3.json(assemblies[0]+".stats.json", function(error, json) {
+            if (error) return console.warn(error);
+            stats = json;
+            asm1 = new Assembly (stats);
+            compare(asm1,asm2);
+          });
+          d3.json(assemblies[1]+".stats.json", function(error, json) {
+            if (error) return console.warn(error);
+            stats = json;
+            asm2 = new Assembly (stats);
+            compare(asm1,asm2);
+          });
+        });
+      }
+      else {
+        var assembly = assemblies[0]
+        document.title = assembly + " assembly stats"
+        d3.json(assembly+".stats.json", function(error, json) {
+          if (error) return console.warn(error);
+          stats = json;
+          var asm = new Assembly (stats);
+          asm.drawPlot('assembly_stats');
+        });
+      }
+    </script>
+    <div id="assembly" style="width:100%;height:100%;">
+      <div id="assembly_stats"></div>
+    </div>
+
+  </body>
+</html>

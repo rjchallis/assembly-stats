@@ -249,7 +249,6 @@
     position:relative;
     height:600px;
     width: 600px;
-    display:inline-block;
   }
   #asm-scale_form_wrapper {
     position: absolute;

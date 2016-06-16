@@ -133,7 +133,7 @@ Assembly.prototype.drawPlot = function(parent_div, longest, circle_span) {
 
   // adjust scales for plot dimensions/data
   if (!longest) longest = this.scaffolds[0] + 1
-  if (longest < this.scaffolds[0]) longest = this.scaffolds[0] + 1
+  if (longest <= this.scaffolds[0]) longest = this.scaffolds[0] + 1
   if (!circle_span) circle_span = this.assembly
   if (circle_span < this.assembly) circle_span = this.assembly
   var span_ratio = this.assembly / circle_span * 100;
