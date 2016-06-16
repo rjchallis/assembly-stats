@@ -52,11 +52,11 @@
       var assemblies = params['assembly'];
       if (params['altAssembly']) assemblies = assemblies.concat(params['altAssembly'])
       var views = params['view'];
-
+      if (!views) views = ['circle']
+      var div = d3.select('div#assembly_stats')
       if (params['altView']){
         views = views.concat(params['altView'])
         // generate tabs
-        var div = d3.select('div#assembly_stats')
         var tab_container = div.append('div').attr('class','asm-tab-container')
         var tabcount = views.length;
         var tabwidth = 100;
