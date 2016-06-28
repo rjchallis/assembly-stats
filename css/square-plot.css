@@ -6,16 +6,12 @@
 .axis line,
 .axis path {
   fill: none;
+  stroke-width:1px;
   stroke: #555555;
   shape-rendering: crispEdges;
+  vector-effect:non-scaling-stroke;
 }
-.grid .tick {
-    stroke: lightgrey;
-    opacity: 0.7;
-}
-.grid path {
-      stroke-width: 0;
-}
+
 
 .asm-cumulative-line {
   stroke:#555555;
