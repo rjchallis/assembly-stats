@@ -2,7 +2,7 @@ Assembly.prototype.squarePlot = function(parent_div, scale_type, max_count, max_
 
   // setup plot dimensions
   var size = 600;
-  var margin = {top: 80, right: 20, bottom: 60, left: 20},
+  var margin = {top: 40, right: 40, bottom: 50, left: 50},
     width = size - margin.left - margin.right,
     height = size - margin.top - margin.bottom;
   var tick = 10;
@@ -85,7 +85,7 @@ Assembly.prototype.addKey = function(assemblies) {
   var group = plot_area.append('g').attr('class','asm-square-key');
   var height = assemblies.length * 25;
   var width = 200;
-  group.attr('transform','translate(370,'+(430-height)+')')
+  group.attr('transform','translate(300,'+(430-height)+')')
   var rows = group.selectAll('g').data(assemblies);
   var rows_enter = rows.enter().append('g').attr('class',function(d,i){ var css = 'asm-square-key-row '; if (i == 0){css += 'asm-reference-key'} return css})
                         .attr('transform',function(d,i){return 'translate(0,'+(i*25)+')'})
