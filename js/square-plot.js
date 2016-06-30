@@ -79,6 +79,13 @@ Assembly.prototype.squarePlot = function(parent_div, scale_type, max_count, max_
   return this;
 }
 
+var mover = document.createEvent('UIEvents');
+mover.initUIEvent('mouseover', true, true /* ... */);
+var mout = document.createEvent('UIEvents');
+mout.initUIEvent('mouseout', true, true /* ... */);
+var mclick = document.createEvent('UIEvents');
+mclick.initUIEvent('click', true, true /* ... */);
+
 Assembly.prototype.addKey = function(assemblies) {
   var current = this;
   var plot_area = this.plot_area
@@ -95,19 +102,17 @@ Assembly.prototype.addKey = function(assemblies) {
   rect.on('mouseover',function(d){
     //d3.select(this).style('fill','rgba(0,0,0,0.3)')
     plot_area.select('text.'+d).classed('asm-square-focus',true)
-    plot_area.select('path.'+d).classed('asm-square-focus',true)
+    plot_area.select('path.'+d).node().dispatchEvent(mover);
   })
   rect.on('click',function(d){
     //d3.select(this).style('fill','rgba(0,0,0,0.3)')
-    var obj = findByValue(current.line_data,'name',d)
-    current.zoomTo(obj)
     plot_area.select('text.'+d).classed('asm-square-focus',false)
-    plot_area.select('path.'+d).classed('asm-square-focus',false)
+    plot_area.select('path.'+d).node().dispatchEvent(mclick);
   })
   rect.on('mouseout',function(d){
     //d3.select(this).style('fill','rgba(0,0,0,0.01)')
     plot_area.select('text.'+d).classed('asm-square-focus',false)
-    plot_area.select('path.'+d).classed('asm-square-focus',false)
+    plot_area.select('path.'+d).node().dispatchEvent(mout);
   })
   return this;
 }
@@ -140,6 +145,9 @@ Assembly.prototype.zoomTo = function(obj){
   var line_data = this.line_data;
   var reference = this;
   line_data.forEach(function(line){
+    line.xScale = reference.xScale;
+    line.yScale = reference.yScale;
+    line.max_span = reference.max_span;
     reference.rescaleLine(line);
   })
 }
@@ -152,6 +160,20 @@ Assembly.prototype.prepareLine = function() {
   })
   return line_data;
 }
+
+Assembly.prototype.span_tip = d3.tip()
+  .attr('class', 'd3-tip')
+  .offset(function(d){return [-5,d.xScale(d.span_offset)]})
+  .html(function(d) {
+    return '<span class="cu-feat-tip"><strong>Span:</strong> ' + (d.span.toLocaleString()) + '<br/><strong>Count:</strong> ' + (d.count.toLocaleString()) + '<br/></span>';
+  })
+
+Assembly.prototype.n50_tip = d3.tip()
+  .attr('class', 'd3-tip')
+  .offset(function(d){return [(d.yScale(d.max_span-d.n50_offset_y)),-d.xScale(d.count/2)+d.xScale(d.n50_offset_x/2)]})
+  .html(function(d) {
+    return '<span class="cu-feat-tip"><strong>N50 length:</strong> ' + (d.n50_length.toLocaleString()) + '<br/><strong>N50 number:</strong> ' + (d.n50_count.toLocaleString()) + '<br/></span>';
+  })
 
 Assembly.prototype.addLine = function(data,classname,assembly) {
   var xScale = this.xScale;
@@ -170,10 +192,16 @@ Assembly.prototype.addLine = function(data,classname,assembly) {
                               .attr("class", 'asm-cumulative-line '+classname)
                               .attr("rel", classname)
                               .style('opacity',0)
+
+  lineGraph.call(this.span_tip)
+  lineGraph.call(this.n50_tip)
   lineGraph.on('mouseover',function(){
     var d = d3.select(this).attr('rel')
     plot_area.select('text.'+d).classed('asm-square-focus',true)
     plot_area.select('path.'+d).classed('asm-square-focus',true)
+    var obj = findByValue(current.line_data,'name',d)
+    current.span_tip.show(obj)
+    current.n50_tip.show(obj)
   })
   lineGraph.on('click',function(){
     var d = d3.select(this).attr('rel')
@@ -181,13 +209,17 @@ Assembly.prototype.addLine = function(data,classname,assembly) {
     current.zoomTo(obj)
     plot_area.select('text.'+d).classed('asm-square-focus',false)
     plot_area.select('path.'+d).classed('asm-square-focus',false)
+    current.span_tip.hide()
+    current.n50_tip.hide()
   })
   lineGraph.on('mouseout',function(){
     var d = d3.select(this).attr('rel')
     plot_area.select('text.'+d).classed('asm-square-focus',false)
     plot_area.select('path.'+d).classed('asm-square-focus',false)
+    current.span_tip.hide()
+    current.n50_tip.hide()
   })
-  this.line_data.push({name:classname,data:data,line:lineGraph,count:assembly.scaffold_count,span:assembly.assembly})
+  this.line_data.push({name:classname,data:data,line:lineGraph,count:assembly.scaffold_count,span:assembly.assembly,n50_length:assembly.npct_length[499],n50_count:assembly.npct_count[499],span_offset:data[999].x/2,xScale:xScale,n50_offset_x:(data[499].x),n50_offset_y:(data[499].y),yScale:yScale,max_span:current.assembly})
 
   if (assembly.scaffold_count > this.max_count){
     rescale = 1;
@@ -213,6 +245,9 @@ Assembly.prototype.addLine = function(data,classname,assembly) {
     var line_data = this.line_data;
     var reference = this;
     line_data.forEach(function(line){
+      line.xScale = current.xScale;
+      line.yScale = current.yScale;
+      line.max_span = current.max_span;
       reference.rescaleLine(line);
     })
   }
