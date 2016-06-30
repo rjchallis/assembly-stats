@@ -1,0 +1,17 @@
+table {
+  font-size: 0.75em;
+  text-align: right;
+  margin: 0 auto;
+  margin-top:20px;
+  border-spacing:0;
+}
+tr:nth-child(odd) {
+  background-color: rgba(166, 206, 227,0.5);
+}
+tr:nth-child(1) {
+  background-color: rgba(31, 120, 180,0.5);
+  color: #000;
+}
+td {
+  padding: 4px;
+}

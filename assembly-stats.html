@@ -5,10 +5,13 @@
   <body>
     <link rel="stylesheet" type="text/css" href="css/circle-plot.css">
     <link rel="stylesheet" type="text/css" href="css/square-plot.css">
+    <link rel="stylesheet" type="text/css" href="css/table.css">
     <script type="text/javascript" src="js/circle-plot.js"></script>
     <script type="text/javascript" src="js/square-plot.js"></script>
+    <script type="text/javascript" src="js/table.js"></script>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.2/jquery.min.js"></script>
     <script src="https://d3js.org/d3.v3.min.js" charset="utf-8"></script>
+    <script src="http://labratrevenge.com/d3-tip/javascripts/d3.tip.v0.6.3.js"></script>
     <style>
       html, body {
         padding:0px;
@@ -20,15 +23,30 @@
       }
       .asm-tab-container {
         position:relative;width:100%;height:34px;text-align:center;
-        color:white;
-        background-color:#555555;
+        color:#555555;
+        background-color:#cccccc;
       }
       .asm-tab {
         position:relative;width:50%;height:30px;display:inline-block;
         font-size:12pt;
         line-height:30px;
-        border:solid 2px #cccccc;
+        margin-left:-2px;
+        margin-top:2px;
+        border:solid 2px #555555;
+        border-top:none;
+        border-bottom:none;
         cursor:pointer;
+        border-radius:17px;
+      }
+      .asm-tab.active {
+        color:black;
+        margin-top:0;
+        border:solid 2px #555555;
+        background-color:#bbbbbb;
+      }
+      .asm-tab:hover {
+        margin-top:0;
+        border:solid 2px #555555;
       }
       .asm-plot-container {
         position:relative;width:100%;height:90%;text-align:center;
@@ -66,10 +84,12 @@
         var tabwidth = 100;
         for (var i = 0; i < tabcount; i++){
           var tab_div = tab_container.append('div')
-                                     .attr('class','asm-tab')
+                                     .attr('class',function(){if (i == 0) return 'asm-tab active'; return 'asm-tab'})
                                      .style('width',tabwidth)
                                      .text(views[i])
           tab_div.on('click',function(){
+            d3.selectAll('.asm-tab').classed('active',false);
+            d3.select(this).classed('active',true);
             var view = d3.select(this).text();
             if (view == 'circle'){
               plot_container.html('')
@@ -93,7 +113,15 @@
               },250)
             }
             else if (view == 'table') {
-              plot_container.html('table view coming soon')
+              plot_container.html('')
+              arr[0].drawTable('asm-plot-container');
+              //setTimeout(function(){
+                arr.forEach(function(asm,index){
+                  if (index > 0){
+                    arr[0].addColumn(asm);
+                  }
+                })
+              //},250)
             }
           })
 
@@ -119,6 +147,16 @@
               var data = arr[index].prepareLine();
               setTimeout(function(){
                 arr[0].addLine(data,assembly,arr[index]);
+              },250)
+            }
+          }
+          else if (views[0] == 'table'){
+            if (index == 0){
+              arr[0].drawTable('asm-plot-container');
+            }
+            else {
+              setTimeout(function(){
+                arr[0].addColumn(arr[index]);
               },250)
             }
           }
