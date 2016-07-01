@@ -12,7 +12,12 @@
   vector-effect:non-scaling-stroke;
 }
 
-
+.asm-cumulative-point {
+  stroke:#555555;
+  stroke-width:2px;
+  fill:#ffffff;
+  pointer-events:none;
+}
 .asm-cumulative-line {
   stroke:#555555;
   stroke-width:2px;

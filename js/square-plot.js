@@ -85,6 +85,12 @@ var mout = document.createEvent('UIEvents');
 mout.initUIEvent('mouseout', true, true /* ... */);
 var mclick = document.createEvent('UIEvents');
 mclick.initUIEvent('click', true, true /* ... */);
+var mmover = document.createEvent('UIEvents');
+mmover.initUIEvent('mouseover', true, true /* ... */);
+var mmout = document.createEvent('UIEvents');
+mmout.initUIEvent('mouseout', true, true /* ... */);
+var mmclick = document.createEvent('UIEvents');
+mmclick.initUIEvent('click', true, true /* ... */);
 
 Assembly.prototype.addKey = function(assemblies) {
   var current = this;
@@ -163,14 +169,14 @@ Assembly.prototype.prepareLine = function() {
 
 Assembly.prototype.span_tip = d3.tip()
   .attr('class', 'd3-tip')
-  .offset(function(d){return [-5,d.xScale(d.span_offset)]})
+  .offset([-5,2])
   .html(function(d) {
     return '<span class="cu-feat-tip"><strong>Span:</strong> ' + (d.span.toLocaleString()) + '<br/><strong>Count:</strong> ' + (d.count.toLocaleString()) + '<br/></span>';
   })
 
 Assembly.prototype.n50_tip = d3.tip()
   .attr('class', 'd3-tip')
-  .offset(function(d){return [(d.yScale(d.max_span-d.n50_offset_y)),-d.xScale(d.count/2)+d.xScale(d.n50_offset_x/2)]})
+  .offset([-5,2])
   .html(function(d) {
     return '<span class="cu-feat-tip"><strong>N50 length:</strong> ' + (d.n50_length.toLocaleString()) + '<br/><strong>N50 number:</strong> ' + (d.n50_count.toLocaleString()) + '<br/></span>';
   })
@@ -192,16 +198,45 @@ Assembly.prototype.addLine = function(data,classname,assembly) {
                               .attr("class", 'asm-cumulative-line '+classname)
                               .attr("rel", classname)
                               .style('opacity',0)
-
-  lineGraph.call(this.span_tip)
-  lineGraph.call(this.n50_tip)
+  var n50_point = this.plot_area.append("circle")
+                            .attr("r", 5)
+                            .attr("cx",function(d){return xScale(assembly.npct_count[499])})
+                            .attr("cy",function(d){return yScale(assembly.assembly/2)})
+                            .attr("class", 'asm-cumulative-point '+classname)
+                            .attr("rel", classname)
+                            .style('opacity',0)
+  var span_point = this.plot_area.append("circle")
+                            .attr("r", 5)
+                            .attr("cx",function(d){return xScale(assembly.scaffold_count)})
+                            .attr("cy",function(d){return yScale(assembly.assembly)})
+                            .attr("class", 'asm-cumulative-point '+classname)
+                            .attr("rel", classname)
+                            .style('opacity',0)
+  span_point.call(this.span_tip)
+  span_point.on('mouseover',function(){
+    var d = d3.select(this).attr('rel')
+    var obj = findByValue(current.line_data,'name',d)
+    current.span_tip.show(obj)
+  })
+  span_point.on('mouseout',function(){
+    var d = d3.select(this).attr('rel')
+    current.span_tip.hide()
+  })
+  n50_point.call(this.n50_tip)
+  n50_point.on('mouseover',function(){
+    var d = d3.select(this).attr('rel')
+    var obj = findByValue(current.line_data,'name',d)
+    current.n50_tip.show(obj)
+  })
+  n50_point.on('mouseout',function(){
+    var d = d3.select(this).attr('rel')
+    current.n50_tip.hide()
+  })
   lineGraph.on('mouseover',function(){
     var d = d3.select(this).attr('rel')
     plot_area.select('text.'+d).classed('asm-square-focus',true)
     plot_area.select('path.'+d).classed('asm-square-focus',true)
-    var obj = findByValue(current.line_data,'name',d)
-    current.span_tip.show(obj)
-    current.n50_tip.show(obj)
+    plot_area.selectAll('circle.'+d)[0].forEach(function(c){c.dispatchEvent(mmover)});
   })
   lineGraph.on('click',function(){
     var d = d3.select(this).attr('rel')
@@ -209,17 +244,15 @@ Assembly.prototype.addLine = function(data,classname,assembly) {
     current.zoomTo(obj)
     plot_area.select('text.'+d).classed('asm-square-focus',false)
     plot_area.select('path.'+d).classed('asm-square-focus',false)
-    current.span_tip.hide()
-    current.n50_tip.hide()
+    plot_area.selectAll('circle.'+d)[0].forEach(function(c){c.dispatchEvent(mmout)});
   })
   lineGraph.on('mouseout',function(){
     var d = d3.select(this).attr('rel')
     plot_area.select('text.'+d).classed('asm-square-focus',false)
     plot_area.select('path.'+d).classed('asm-square-focus',false)
-    current.span_tip.hide()
-    current.n50_tip.hide()
+    plot_area.selectAll('circle.'+d)[0].forEach(function(c){c.dispatchEvent(mmout)});
   })
-  this.line_data.push({name:classname,data:data,line:lineGraph,count:assembly.scaffold_count,span:assembly.assembly,n50_length:assembly.npct_length[499],n50_count:assembly.npct_count[499],span_offset:data[999].x/2,xScale:xScale,n50_offset_x:(data[499].x),n50_offset_y:(data[499].y),yScale:yScale,max_span:current.assembly})
+  this.line_data.push({name:classname,data:data,line:lineGraph,n50_point:n50_point,span_point:span_point,count:assembly.scaffold_count,span:assembly.assembly,n50_length:assembly.npct_length[499],n50_count:assembly.npct_count[499]})
 
   if (assembly.scaffold_count > this.max_count){
     rescale = 1;
@@ -247,15 +280,18 @@ Assembly.prototype.addLine = function(data,classname,assembly) {
     line_data.forEach(function(line){
       line.xScale = current.xScale;
       line.yScale = current.yScale;
-      line.max_span = current.max_span;
       reference.rescaleLine(line);
     })
   }
   else {
     lineGraph.transition().duration(500).style('opacity',1)
+    n50_point.transition().duration(500).style('opacity',1)
+    span_point.transition().duration(500).style('opacity',1)
   }
 }
 
 Assembly.prototype.rescaleLine = function(line_data) {
   line_data.line.transition().duration(500).attr("d", this.lineFunction(line_data.data)).style('opacity',1)
+  line_data.n50_point.transition().duration(500).attr("cx", this.xScale(line_data.n50_count)).attr("cy", this.yScale(line_data.span/2)).style('opacity',1)
+  line_data.span_point.transition().duration(500).attr("cx", this.xScale(line_data.count)).attr("cy", this.yScale(line_data.span)).style('opacity',1)
 }
