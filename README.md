@@ -1,7 +1,9 @@
-# assembly_stats
+# assembly-stats
 [![DOI](https://zenodo.org/badge/20772/rjchallis/assembly_stats.svg)](https://zenodo.org/badge/latestdoi/20772/rjchallis/assembly_stats)
 
-An assembly metric visualisation to allow rapid visual assessment and comparison of assembly quality.  
+Assembly metric visualisations to facilitate rapid assessment and comparison of assembly quality.  
+
+[Live demo](http://content.lepbase.org/pages/assemblies/assembly-stats.html?assembly=Danaus_plexippus_v3&altAssembly=Heliconius_melpomene_Hmel2&view=compare&altView=circle&altView=cumulative&altView=table)
 
 ![Screenshot](http://rjchallis.github.io/assembly_stats/screenshots/assembly_stats.png "Screenshot")
 
@@ -14,11 +16,13 @@ A _de novo_ genome assembly can be summarised by a number of metrics, including:
 - CEGMA completeness
 - Scaffold/contig length/count distribution
 
-Simply listing or tabulating these values allows comparison, however the fact that such values can vary by several orders of magnitude can present a barrier to easy interpretation, particularly when the ratio of values is being considered.  Tabulated metrics also necessarily omit distributions.  
+assembly-stats supports two widely used presentations of these values, tabular and cumulative length plots, and introduces an additional circular plot that summarises most commonly used assembly metrics in a single visualisation.  Each of these presentations is generated using javascript from a common (JSON) data structure, allowing toggling between alternative views, and each can be applied to a single or multiple assemblies to allow direct comparison of alternate assemblies.  
 
-Simple plots of cumulative scaffold length can be effective and for comparison of two or more assemblies, plotting both on a single set of axes can reveal differences in quality very clearly.  While metrics such as assembly size, number of scaffolds, N50 and N90 can be derived from these plots, other metrics must still be tabulated and the length of the longest scaffold can be particularly difficult to determine.  The scale for the axes is usually chosen to accommodate the data for a single assembly or set of assemblies, meaning that it is usually necessary to replot the data or consider the relative axis scales carefully to compare assemblies that have been plotted separately.
+Tabular presentation allows direct comparison of exact values between assemblies, the limitations of this approach lie in the necessary omission of distributions and the challenge of interpreting ratios of values that may vary by several orders of magnitude.
 
-The goal of assembly_stats is to overcome some of these shortcomings to produce a visualisation that allows rapid assessment of most common assembly metrics. The graphic is essentially scale independent so assemblies of any size with different strengths and weaknesses produce distinct patterns that can be recognised at a glance, allowing comparison of assemblies produced at different times either by looking at the plots side by side or simply remembering the keys features from the plot of a previous assembly when considering a new one.
+Cumulative scaffold length plots are highly effective for comparison of two or more assemblies, plotting both on a single set of axes reveals differences in assembled size and the N50 count very clearly. However, other metrics must still be tabulated or annotated on the plot for example N50 length and the longest scaffold length can be particularly difficult to determine from the plot alone. The scale for the axes is usually chosen to accommodate the data for a single assembly or set of assemblies, meaning that it is usually necessary to replot the data or consider the relative axis scales carefully to compare assemblies that have been plotted separately. The cumulative distribution plots in assembly-stats address the problem of scaling by allowing any combination of assemblies to be plotted together and allowing rescaling of the axes to fit any one of the individual assemblies.
+
+The circular plots have been introduced to overcome some of the shortcomings of tabular and cumulative distribution plots in a visualisation that allows rapid assessment of most common assembly metrics. The graphic is essentially scale independent so assemblies of any size with different strengths and weaknesses produce distinct patterns that can be recognised at a glance. While side by side presentation of a pair of assemblies on consistently scaled axes allows direct comparison, the standard presentation is designed to facilitate assessment of overall assembly quality by consideration of the keys features from the plot.
 
 ## examples
 
@@ -52,10 +56,11 @@ The goal of assembly_stats is to overcome some of these shortcomings to produce 
 
 ### input format
 
-Data to be plotted must be supplied as a JSON format object.  As of version 1.1 data may be pre-binned to improve performance with assemblies containing potentially millions of contigs.  The simplest way to generate this is using the ``asm2stats.pl`` perl script in the ``pl`` folder:
+Data to be plotted must be supplied as a JSON format object.  As of version 1.1 data may be pre-binned to improve performance with assemblies containing potentially millions of contigs.  The simplest way to generate this is using the ``asm2stats.pl`` or ``asm2stats.minmaxgc.pl`` perl scripts in the ``pl`` folder:
 
 ```bash
 perl asm2stats.pl genome_assembly.fa > output.json
+perl asm2stats.minmaxgc.pl genome_assembly.fa > output.json
 ```
 
 This input format should be preferred as it improves performance and corrects for a bug in the javascript binning code by adjusting bin size to accommodate assembly spans that are not divisible by 1000, however the previous input format (with a full list of scaffold lengths is still supported).
