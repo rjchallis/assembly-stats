@@ -1,5 +1,7 @@
 # assembly-stats
 
+[![DOI](https://zenodo.org/badge/20772/rjchallis/assembly-stats.svg)](https://zenodo.org/badge/latestdoi/20772/rjchallis/assembly-stats)
+
 Assembly metric visualisations to facilitate rapid assessment and comparison of assembly quality.  
 
 [Live demo](http://content.lepbase.org/pages/assemblies/assembly-stats.html?assembly=Danaus_plexippus_v3&altAssembly=Heliconius_melpomene_Hmel2&view=compare&altView=circle&altView=cumulative&altView=table)
