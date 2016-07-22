@@ -106,17 +106,17 @@ Assembly.prototype.addKey = function(assemblies) {
   rows_enter.append('text').attr('class',function(d){return 'asm-square-key-text '+d});
   rows.select('text').text(function(d){return d})
   rect.on('mouseover',function(d){
-    //d3.select(this).style('fill','rgba(0,0,0,0.3)')
+    d = d.replace('.','_');
     plot_area.select('text.'+d).classed('asm-square-focus',true)
     plot_area.select('path.'+d).node().dispatchEvent(mover);
   })
   rect.on('click',function(d){
-    //d3.select(this).style('fill','rgba(0,0,0,0.3)')
+    d = d.replace('.','_');
     plot_area.select('text.'+d).classed('asm-square-focus',false)
     plot_area.select('path.'+d).node().dispatchEvent(mclick);
   })
   rect.on('mouseout',function(d){
-    //d3.select(this).style('fill','rgba(0,0,0,0.01)')
+    d = d.replace('.','_');
     plot_area.select('text.'+d).classed('asm-square-focus',false)
     plot_area.select('path.'+d).node().dispatchEvent(mout);
   })

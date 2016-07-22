@@ -143,7 +143,7 @@
         d3.json(assembly+".assembly-stats.json", function(error, json) {
           if (error) return console.warn(error);
           arr[index] = new Assembly (json);
-          arr[index].name = assembly;
+          arr[index].name = assembly.replace('.','_');;
           if (views[0] == 'compare'){
             if (index <= 1) compare(arr[0],arr[1]);
           }
