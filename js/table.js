@@ -1,5 +1,5 @@
 Assembly.prototype.tabulate = function() {
-  var rowdata = [ {'title':'','val':this.name},
+  var rowdata = [ {'title':'','val':this.name.replace(/_/g,' ')},
                   {'title':'span (bp)','val':this.assembly},
                   {'title':'N (%)','val':this.N.toFixed(2)},
                   {'title':'GC (%)','val':this.GC.toFixed(2)},
