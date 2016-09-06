@@ -80,17 +80,17 @@ Assembly.prototype.squarePlot = function(parent_div, scale_type, max_count, max_
 }
 
 var mover = document.createEvent('UIEvents');
-mover.initUIEvent('mouseover', true, true /* ... */);
+mover.initUIEvent('mouseover', true, true, window, 1);
 var mout = document.createEvent('UIEvents');
-mout.initUIEvent('mouseout', true, true /* ... */);
+mout.initUIEvent('mouseout', true, true, window, 1);
 var mclick = document.createEvent('UIEvents');
-mclick.initUIEvent('click', true, true /* ... */);
+mclick.initUIEvent('click', true, true, window, 1);
 var mmover = document.createEvent('UIEvents');
-mmover.initUIEvent('mouseover', true, true /* ... */);
+mmover.initUIEvent('mouseover', true, true, window, 1);
 var mmout = document.createEvent('UIEvents');
-mmout.initUIEvent('mouseout', true, true /* ... */);
+mmout.initUIEvent('mouseout', true, true, window, 1);
 var mmclick = document.createEvent('UIEvents');
-mmclick.initUIEvent('click', true, true /* ... */);
+mmclick.initUIEvent('click', true, true, window, 1);
 
 Assembly.prototype.addKey = function(assemblies) {
   var current = this;
