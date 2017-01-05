@@ -81,6 +81,7 @@
         params[parts[0]].push(parts[1])
       })
       var assemblies = params['assembly'];
+      var path = params['path'] || "";
       if (params['altAssembly']) assemblies = assemblies.concat(params['altAssembly'])
       var views = params['view'];
       if (!views) views = ['circle']
@@ -140,7 +141,7 @@
       document.title = assemblies[0] + " assembly stats"
       var arr = [];
       assemblies.forEach(function(assembly,index){
-        d3.json(json/assembly+".assembly-stats.json", function(error, json) {
+        d3.json(path+assembly+".assembly-stats.json", function(error, json) {
           if (error) return console.warn(error);
           arr[index] = new Assembly (json);
           arr[index].name = assembly.replace('.','_');;
