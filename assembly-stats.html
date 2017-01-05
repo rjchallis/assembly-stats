@@ -140,7 +140,7 @@
       document.title = assemblies[0] + " assembly stats"
       var arr = [];
       assemblies.forEach(function(assembly,index){
-        d3.json(assembly+".assembly-stats.json", function(error, json) {
+        d3.json(json/assembly+".assembly-stats.json", function(error, json) {
           if (error) return console.warn(error);
           arr[index] = new Assembly (json);
           arr[index].name = assembly.replace('.','_');;
