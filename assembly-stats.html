@@ -81,7 +81,7 @@
         params[parts[0]].push(parts[1])
       })
       var assemblies = params['assembly'];
-      var path = params['path'] || "";
+      var path = params['path'] || "json/";
       if (params['altAssembly']) assemblies = assemblies.concat(params['altAssembly'])
       var views = params['view'];
       if (!views) views = ['circle']
