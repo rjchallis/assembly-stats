@@ -7,6 +7,7 @@ function Assembly(stats, scaffolds, contigs) {
   this.N = stats.N ? stats.N <= 100 ? stats.N < 1 ? stats.N * 100 : stats.N : stats.N / this.assembly * 100 : 0;
   this.ATGC = stats.ATGC ? stats.ATGC <= 100 ? stats.ATGC <= 1 ? stats.ATGC * 100 : stats.ATGC : stats.ATGC / this.assembly * 100 : 100 - this.N;
   this.GC = stats.GC ? stats.GC <= 100 ? stats.GC <= 1 ? stats.GC * 100 : stats.GC : stats.GC / this.assembly * 100 : 0;
+  this.contig_sum = this.assembly - this.assembly * this.N / 100;
   this.cegma_complete = stats.cegma_complete;
   this.cegma_partial = stats.cegma_partial;
   this.busco = stats.busco;
@@ -541,7 +542,7 @@ Assembly.prototype.drawPlot = function(parent_div, longest, circle_span) {
     count_txt.append('tspan').attr('baseline-shift', 'sub').attr('font-size', '75%').text(10)
     count_txt.append('tspan').text(' contig count (total ' + this.contig_count.toLocaleString() + ')');
     key.append('rect').attr('y', w * 1.5).attr('height', w).attr('width', w).attr('class', 'asm-contig asm-toggle');
-    key.append('text').attr('x', w + 3).attr('y', w * 2.5 - 1).text('Contig length').attr('class', 'asm-key');
+    key.append('text').attr('x', w + 3).attr('y', w * 2.5 - 1).text('Contig length (total ' + getReadableSeqSizeString(this.contig_sum, 0) + ')').attr('class', 'asm-key');
   }
 
   // add adjustable scale legend
