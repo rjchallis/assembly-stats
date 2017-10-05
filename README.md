@@ -4,7 +4,7 @@
 
 Assembly metric visualisations to facilitate rapid assessment and comparison of assembly quality.  
 
-[Live demo](http://content.lepbase.org/pages/assemblies/assembly-stats.html?assembly=Danaus_plexippus_v3&altAssembly=Heliconius_melpomene_Hmel2&view=compare&altView=circle&altView=cumulative&altView=table)
+[Live demo](http://content.lepbase.org/html/assembly-stats/assembly-stats.html?path=/v4/json/assemblies/&amp;assembly=Danaus_plexippus_v3&amp;view=circle&amp;altAssembly=Danaus_plexippus_DanPle_1.0&amp;altView=compare&amp;altAssembly=Heliconius_melpomene_melpomene_Hmel2&amp;altView=cumulative&amp;altView=table)
 
 Latest and most complete documentation is available at [assembly-stats.readme.io](http://assembly-stats.readme.io)
 
