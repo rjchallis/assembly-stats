@@ -641,7 +641,7 @@ Assembly.prototype.drawPlot = function(parent_div, longest, circle_span) {
             }
           });
         }
-        if (className == 'asm-count') {
+        /*if (className == 'asm-count') {
           $('#'+parent_div+' .asm-contig_count.asm-toggle').css({
             fill: "rgb(255, 255, 255)"
           })
@@ -656,7 +656,7 @@ Assembly.prototype.drawPlot = function(parent_div, longest, circle_span) {
           $('#'+parent_div+' .asm-count.asm-remote').css({
             visibility: "hidden"
           })
-        }
+        }*/
       });
     }
   });
