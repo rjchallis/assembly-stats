@@ -94,10 +94,12 @@ sub bin_seqs {
             my $gcs = () = $str =~ /[gc]/gi;
             $len += length($str) - $ns;
             $ns /= length($str);
-            $ns *= 100;
+            $ns = sprintf "%.3f",$ns*100;
+            $ns *= 1;
             $sum_ns += $ns;
             $gcs /= (length($str) - $ns);
-            $gcs *= 100;
+            $gcs = sprintf "%.3f",$gcs*100;
+            $gcs *= 1;
             $sum_gcs += $gcs;
             $min_ns = $ns if $ns < $min_ns;
             $min_gcs = $gcs if $gcs < $min_gcs;
@@ -121,8 +123,12 @@ sub bin_seqs {
         $binned_gcs[$y] = () = $string =~ /[gc]/gi;
         $nsum += $binned_ns[$y];
         $gcsum += $binned_gcs[$y];
-        $binned_gcs[$y] /= ($bin+$extra-$binned_ns[$y]) / 100;
-        $binned_ns[$y] /= ($bin+$extra) / 100;
+        if ($bin+$extra-$binned_ns[$y] == 0) {
+          $binned_gcs[$y] = 0;
+        } else {
+          $binned_gcs[$y] /= ($bin+$extra-$binned_ns[$y]) / 100;
+        }
+	$binned_ns[$y] /= ($bin+$extra) / 100;
       }
       $y++;
     }
@@ -140,7 +146,6 @@ sub bin_seqs {
   $return{binned_scaffold_lengths} = \@binned_lengths;
   return \%return
 }
-
 
 
 sub split_scaf {
