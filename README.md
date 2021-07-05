@@ -23,15 +23,15 @@ assembly-stats supports two widely used presentations of these values, tabular a
 
 Tabular presentation allows direct comparison of exact values between assemblies, the limitations of this approach lie in the necessary omission of distributions and the challenge of interpreting ratios of values that may vary by several orders of magnitude.
 
-![Screenshot](http://content.lepbase.org/pages/assemblies/screenshots/table.png "Table view")
+![Screenshot](/screenshots/table.png "Table view")
 
 Cumulative scaffold length plots are highly effective for comparison of two or more assemblies, plotting both on a single set of axes reveals differences in assembled size and the N50 count very clearly. However, other metrics must still be tabulated or annotated on the plot for example N50 length and the longest scaffold length can be particularly difficult to determine from the plot alone. The scale for the axes is usually chosen to accommodate the data for a single assembly or set of assemblies, meaning that it is usually necessary to replot the data or consider the relative axis scales carefully to compare assemblies that have been plotted separately. The cumulative distribution plots in assembly-stats address the problem of scaling by allowing any combination of assemblies to be plotted together and allowing rescaling of the axes to fit any one of the individual assemblies.
 
-![Screenshot](http://content.lepbase.org/pages/assemblies/screenshots/cumulative.png "Cumulative view")
+![Screenshot](/screenshots/cumulative.png "Cumulative view")
 
 The circular plots have been introduced to overcome some of the shortcomings of tabular and cumulative distribution plots in a visualisation that allows rapid assessment of most common assembly metrics. The graphic is essentially scale independent so assemblies of any size with different strengths and weaknesses produce distinct patterns that can be recognised at a glance. While side by side presentation of a pair of assemblies on consistently scaled axes allows direct comparison, the standard presentation is designed to facilitate assessment of overall assembly quality by consideration of the keys features from the plot.
 
-![Screenshot](http://content.lepbase.org/pages/assemblies/screenshots/circle.png "Circle view")
+![Screenshot](/screenshots/circle.png "Circle view")
 
 
 ## plot descritption
