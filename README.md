@@ -56,11 +56,12 @@ The circular plots have been introduced to overcome some of the shortcomings of 
 Data to be plotted must be supplied as a JSON format object.  As of version 1.1 data may be pre-binned to improve performance with assemblies containing potentially millions of contigs.  The simplest way to generate this is using the ``asm2stats.pl`` or ``asm2stats.minmaxgc.pl`` perl scripts in the ``pl`` folder:
 
 ```bash
-perl asm2stats.pl genome_assembly.fa > output.json
-perl asm2stats.minmaxgc.pl genome_assembly.fa > output.minmaxgc.json
+perl asm2stats.pl genome_assembly.fa > output.assembly-stats.json
+perl asm2stats.minmaxgc.pl genome_assembly.fa > output.assembly-stats.json
 ```
 
 This input format should be preferred as it improves performance and corrects for a bug in the javascript binning code by adjusting bin size to accommodate assembly spans that are not divisible by 1000, however the previous input format (with a full list of scaffold lengths is still supported).
+
 
 ### usage
 
@@ -76,6 +77,8 @@ The simplest plot requires a target div, an assembly span, a count of ACGT bases
   })
 </script>
 ```
+
+If called using javascript in a custom html file as above, the file can have any name, but for use with the example `assembly-stats.html` file, the json filename should match the pattern `<assembly-name>.assembly-stats.json`. This need to be hosted as a webpage in order to run, if you would rather run this using github pages than set up a local webserver, follow the instructions by @ammaraziz in [this fork](https://github.com/ammaraziz/assembly-stats)
 
 The json object contains the following keys:
 - ``assembly`` - the total assembly span
