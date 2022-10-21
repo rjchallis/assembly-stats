@@ -78,7 +78,9 @@ The simplest plot requires a target div, an assembly span, a count of ACGT bases
 </script>
 ```
 
-If called using javascript in a custom html file as above, the file can have any name, but for use with the example `assembly-stats.html` file, the json filename should match the pattern `<assembly-name>.assembly-stats.json`. This need to be hosted as a webpage in order to run, if you would rather run this using github pages than set up a local webserver, follow the instructions by @ammaraziz in [this fork](https://github.com/ammaraziz/assembly-stats)
+If called using javascript in a custom html file as above, the file can have any name, but for use with the example `assembly-stats.html` file, the json filename should match the pattern `<assembly-name>.assembly-stats.json`. This needs to be hosted as a webpage in order to run, if you would rather run this using github pages than set up a local webserver, follow the instructions by [@ammaraziz](https://github.com/ammaraziz) in [this fork](https://github.com/ammaraziz/assembly-stats). 
+
+Alternatively use python `http.server` as suggested by [@hung-th](https://github.com/hung-th) by executing the command `python -m http.server 8080` in the assembly-stats directory, then visit `http://0.0.0.0:8080/assembly-stats.html?path=json/&assembly=output&view=circle&altView=cumulative&altView=table` in a web browser (assuming the json file is named `output.assembly-stats.json`).
 
 The json object contains the following keys:
 - ``assembly`` - the total assembly span
