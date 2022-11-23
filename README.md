@@ -2,15 +2,22 @@
 
 [![DOI](https://zenodo.org/badge/20772/rjchallis/assembly-stats.svg)](https://zenodo.org/badge/latestdoi/20772/rjchallis/assembly-stats)
 
-Assembly metric visualisations to facilitate rapid assessment and comparison of assembly quality.  
+> :warning: **This branch is in development**: All methods are currently being reimplemented.
 
-[Live demo](http://content.lepbase.org/html/assembly-stats/assembly-stats.html?path=/v4/json/assemblies/&amp;assembly=Danaus_plexippus_v3&amp;view=circle&amp;altAssembly=Danaus_plexippus_DanPle_1.0&amp;altView=compare&amp;altAssembly=Heliconius_melpomene_melpomene_Hmel2&amp;altView=cumulative&amp;altView=table)
+I am currently working towards a reusable implementation in Rust/WebAssembly so previous commands will not work in this branch.
+
+## Previous README
+
+Assembly metric visualisations to facilitate rapid assessment and comparison of assembly quality.
+
+[Live demo](http://content.lepbase.org/html/assembly-stats/assembly-stats.html?path=/v4/json/assemblies/&assembly=Danaus_plexippus_v3&view=circle&altAssembly=Danaus_plexippus_DanPle_1.0&altView=compare&altAssembly=Heliconius_melpomene_melpomene_Hmel2&altView=cumulative&altView=table)
 
 Latest and most complete documentation is available at [assembly-stats.readme.io](http://assembly-stats.readme.io)
 
 ## Description
 
 A _de novo_ genome assembly can be summarised by a number of metrics, including:
+
 - Overall assembly length
 - Number of scaffolds/contigs
 - Length of longest scaffold/contig
@@ -19,7 +26,7 @@ A _de novo_ genome assembly can be summarised by a number of metrics, including:
 - CEGMA completeness
 - Scaffold/contig length/count distribution
 
-assembly-stats supports two widely used presentations of these values, tabular and cumulative length plots, and introduces an additional circular plot that summarises most commonly used assembly metrics in a single visualisation.  Each of these presentations is generated using javascript from a common (JSON) data structure, allowing toggling between alternative views, and each can be applied to a single or multiple assemblies to allow direct comparison of alternate assemblies.  
+assembly-stats supports two widely used presentations of these values, tabular and cumulative length plots, and introduces an additional circular plot that summarises most commonly used assembly metrics in a single visualisation. Each of these presentations is generated using javascript from a common (JSON) data structure, allowing toggling between alternative views, and each can be applied to a single or multiple assemblies to allow direct comparison of alternate assemblies.
 
 Tabular presentation allows direct comparison of exact values between assemblies, the limitations of this approach lie in the necessary omission of distributions and the challenge of interpreting ratios of values that may vary by several orders of magnitude.
 
@@ -33,8 +40,8 @@ The circular plots have been introduced to overcome some of the shortcomings of 
 
 ![Screenshot](/screenshots/circle.png "Circle view")
 
-
 ## plot descritption
+
 - click on any colour tile in the legend to toggle visibility of that feature on/off
 - The inner radius of the circular plot represents the length of the longest scaffold in the assembly
 - The angle subtended by the first (red) segment within this plot indicates the percentage of the assembly that is in the longest scaffold
@@ -53,7 +60,7 @@ The circular plots have been introduced to overcome some of the shortcomings of 
 
 ### input format
 
-Data to be plotted must be supplied as a JSON format object.  As of version 1.1 data may be pre-binned to improve performance with assemblies containing potentially millions of contigs.  The simplest way to generate this is using the ``asm2stats.pl`` or ``asm2stats.minmaxgc.pl`` perl scripts in the ``pl`` folder:
+Data to be plotted must be supplied as a JSON format object. As of version 1.1 data may be pre-binned to improve performance with assemblies containing potentially millions of contigs. The simplest way to generate this is using the `asm2stats.pl` or `asm2stats.minmaxgc.pl` perl scripts in the `pl` folder:
 
 ```bash
 perl asm2stats.pl genome_assembly.fa > output.assembly-stats.json
@@ -62,44 +69,45 @@ perl asm2stats.minmaxgc.pl genome_assembly.fa > output.assembly-stats.json
 
 This input format should be preferred as it improves performance and corrects for a bug in the javascript binning code by adjusting bin size to accommodate assembly spans that are not divisible by 1000, however the previous input format (with a full list of scaffold lengths is still supported).
 
-
 ### usage
 
-The simplest plot requires a target div, an assembly span, a count of ACGT bases, the GC percentage and an array of scaffold lengths, however it is best to use the ``asm2stats.pl``/``asm2stats.minmaxgc.pl`` perl scripts described above to generate a richer, pre-processed input format.  See the ``Danaus_plexippus_v3.assembly-stats.json`` file for a complete example using pre-binned data, basic usage is detailed below:
+The simplest plot requires a target div, an assembly span, a count of ACGT bases, the GC percentage and an array of scaffold lengths, however it is best to use the `asm2stats.pl`/`asm2stats.minmaxgc.pl` perl scripts described above to generate a richer, pre-processed input format. See the `Danaus_plexippus_v3.assembly-stats.json` file for a complete example using pre-binned data, basic usage is detailed below:
 
 ```html
 <div id="assembly_stats">
-<script>
-  d3.json("Danaus_plexippus_v3.assembly-stats.json", function(error, json) {
-    if (error) return console.warn(error);
-    asm = new Assembly (json);
-    asm.drawPlot('assembly_stats');
-  })
-</script>
+  <script>
+    d3.json("Danaus_plexippus_v3.assembly-stats.json", function (error, json) {
+      if (error) return console.warn(error);
+      asm = new Assembly(json);
+      asm.drawPlot("assembly_stats");
+    });
+  </script>
+</div>
 ```
 
-If called using javascript in a custom html file as above, the file can have any name, but for use with the example `assembly-stats.html` file, the json filename should match the pattern `<assembly-name>.assembly-stats.json`. This needs to be hosted as a webpage in order to run, if you would rather run this using github pages than set up a local webserver, follow the instructions by [@ammaraziz](https://github.com/ammaraziz) in [this fork](https://github.com/ammaraziz/assembly-stats). 
+If called using javascript in a custom html file as above, the file can have any name, but for use with the example `assembly-stats.html` file, the json filename should match the pattern `<assembly-name>.assembly-stats.json`. This needs to be hosted as a webpage in order to run, if you would rather run this using github pages than set up a local webserver, follow the instructions by [@ammaraziz](https://github.com/ammaraziz) in [this fork](https://github.com/ammaraziz/assembly-stats).
 
 Alternatively use python `http.server` as suggested by [@hung-th](https://github.com/hung-th) by executing the command `python -m http.server 8080` in the assembly-stats directory, then visit `http://0.0.0.0:8080/assembly-stats.html?path=json/&assembly=output&view=circle&altView=cumulative&altView=table` in a web browser (assuming the json file is named `output.assembly-stats.json`).
 
 The json object contains the following keys:
-- ``assembly`` - the total assembly span
-- ``ATGC`` - the assembly span without Ns (redundant if ``N`` is specified)
-- ``GC`` - the GC percentage of the assembly
-- ``N`` - the total number of Ns (redundant if ``ATGC`` is specified)
-- ``scaffold_count`` - the total number of scaffolds in the assembly
-- ``scaffolds`` - an array of scaffold lengths (only the longest scaffold is needed if ``binned_scaffold_lengths`` and ``binned_scaffold_counts`` are specified)
-- ``binned_scaffold_lengths`` - an array of 1000 scaffold lengths representing the N0.1 to N100 scaffold lengths for the assembly
-- ``binned_scaffold_counts`` - an array of 1000 scaffold counts representing the N0.1 to N100 scaffold numbers for the assembly
-- ``contig_count`` - (optional) the total number of contigs in the assembly
-- ``contigs`` - (optional) an array of contig lengths (only the longest contig is needed if ``binned_contig_lengths`` and ``binned_contig_counts`` are specified)
-- ``binned_contig_lengths`` - (optional) an array of 1000 contig lengths representing the N0.1 to N100 contig lengths for the assembly
-- ``binned_contig_counts`` - (optional) an array of 1000 contig counts representing the N0.1 to N100 contig numbers for the assembly
-- ``binned_Ns`` - (optional) an array of 1000 values representing the N content of each bin based on size-sorted scaffold sequences
-- ``binned_GCs`` - (optional) an array of 1000 values representing the GC content of each bin based on size-sorted scaffold sequences
 
+- `assembly` - the total assembly span
+- `ATGC` - the assembly span without Ns (redundant if `N` is specified)
+- `GC` - the GC percentage of the assembly
+- `N` - the total number of Ns (redundant if `ATGC` is specified)
+- `scaffold_count` - the total number of scaffolds in the assembly
+- `scaffolds` - an array of scaffold lengths (only the longest scaffold is needed if `binned_scaffold_lengths` and `binned_scaffold_counts` are specified)
+- `binned_scaffold_lengths` - an array of 1000 scaffold lengths representing the N0.1 to N100 scaffold lengths for the assembly
+- `binned_scaffold_counts` - an array of 1000 scaffold counts representing the N0.1 to N100 scaffold numbers for the assembly
+- `contig_count` - (optional) the total number of contigs in the assembly
+- `contigs` - (optional) an array of contig lengths (only the longest contig is needed if `binned_contig_lengths` and `binned_contig_counts` are specified)
+- `binned_contig_lengths` - (optional) an array of 1000 contig lengths representing the N0.1 to N100 contig lengths for the assembly
+- `binned_contig_counts` - (optional) an array of 1000 contig counts representing the N0.1 to N100 contig numbers for the assembly
+- `binned_Ns` - (optional) an array of 1000 values representing the N content of each bin based on size-sorted scaffold sequences
+- `binned_GCs` - (optional) an array of 1000 values representing the GC content of each bin based on size-sorted scaffold sequences
 
 Additional data will be plotted, if added to the stats object including:
+
 - CEGMA scores
 
   ```json
@@ -117,16 +125,16 @@ Additional data will be plotted, if added to the stats object including:
            n:2675 }
   ```
 
-While the plots were conceived as scale independent visualisations, there are occasions when it is useful to compare assemblies on the same radial (longest scaffold) or circumferential (assembly span) scales.  These scales may be modified on the plot by clicking the grey boxes under the scale heading.  Plots can also be drawn with an specific scale by supplying additional arguments to ``drawPlot()``.
+While the plots were conceived as scale independent visualisations, there are occasions when it is useful to compare assemblies on the same radial (longest scaffold) or circumferential (assembly span) scales. These scales may be modified on the plot by clicking the grey boxes under the scale heading. Plots can also be drawn with an specific scale by supplying additional arguments to `drawPlot()`.
 
 For example to scale the radius to 10 Mb and the circumference to 400 Mb (values smaller than the default will be ignored):
 
 ```javascript
-  asm.drawPlot('assembly_stats',10000000,400000000);
+asm.drawPlot("assembly_stats", 10000000, 400000000);
 ```
 
-It is also possible to programmatically toggle the visibility of plot features by passing an array of classnames to ``toggleVisible()``:
+It is also possible to programmatically toggle the visibility of plot features by passing an array of classnames to `toggleVisible()`:
 
 ```javascript
-  asm.toggleVisible(['asm-longest_pie','asm-count']);
+asm.toggleVisible(["asm-longest_pie", "asm-count"]);
 ```
