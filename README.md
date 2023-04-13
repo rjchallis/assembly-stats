@@ -34,7 +34,7 @@ The circular plots have been introduced to overcome some of the shortcomings of 
 ![Screenshot](/screenshots/circle.png "Circle view")
 
 
-## plot descritption
+## plot description
 - click on any colour tile in the legend to toggle visibility of that feature on/off
 - The inner radius of the circular plot represents the length of the longest scaffold in the assembly
 - The angle subtended by the first (red) segment within this plot indicates the percentage of the assembly that is in the longest scaffold
