@@ -103,18 +103,20 @@ Additional data will be plotted, if added to the stats object including:
 - CEGMA scores
 
   ```json
-  cegma_complete:    83.87,
-  cegma_partial:    95.16
+  "cegma_complete": 83.87,
+  "cegma_partial": 95.16
   ```
 
 - BUSCO complete, duplicated, fragmented, missing and number of genes (will be plotted in place of CEGMA if both are present)
 
   ```json
-  busco: { C:87.1,
-           D:3.6,
-           F:10.1,
-           M:2.8,
-           n:2675 }
+  "busco": { 
+    "C": 87.1,
+    "D": 3.6,
+    "F": 10.1,
+    "M": 2.8,
+    "n": 2675
+  },
   ```
 
 While the plots were conceived as scale independent visualisations, there are occasions when it is useful to compare assemblies on the same radial (longest scaffold) or circumferential (assembly span) scales.  These scales may be modified on the plot by clicking the grey boxes under the scale heading.  Plots can also be drawn with an specific scale by supplying additional arguments to ``drawPlot()``.
