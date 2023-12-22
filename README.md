@@ -1,5 +1,15 @@
 # assembly-stats
 
+=========================================================================
+
+## Updated code available
+
+The code in this repository is no longer actively maintained. The latest code for generating snail plots is part of the [BlobToolKit](https://github.com/blobtoolkit/blobtoolkit) project. BlobToolKit supports interactive (see the [public viewer instance](https://blobtoolkit.genomehubs.org/view) and static assembly visualisation. To generate an assembly-stats snail plot on the command line, [install blobtoolkit](https://github.com/blobtoolkit/blobtoolkit/wiki/Installation) and follow the [command line instructions](https://github.com/blobtoolkit/blobtoolkit/wiki/Snail-plot#command-line)
+
+=========================================================================
+
+# Legacy code README
+
 [![DOI](https://zenodo.org/badge/20772/rjchallis/assembly-stats.svg)](https://zenodo.org/badge/latestdoi/20772/rjchallis/assembly-stats)
 
 Assembly metric visualisations to facilitate rapid assessment and comparison of assembly quality.  
@@ -7,6 +17,7 @@ Assembly metric visualisations to facilitate rapid assessment and comparison of 
 [Live demo](http://content.lepbase.org/html/assembly-stats/assembly-stats.html?path=/v4/json/assemblies/&amp;assembly=Danaus_plexippus_v3&amp;view=circle&amp;altAssembly=Danaus_plexippus_DanPle_1.0&amp;altView=compare&amp;altAssembly=Heliconius_melpomene_melpomene_Hmel2&amp;altView=cumulative&amp;altView=table)
 
 Latest and most complete documentation is available at [assembly-stats.readme.io](http://assembly-stats.readme.io)
+
 
 ## Description
 
